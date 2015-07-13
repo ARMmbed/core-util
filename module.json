@@ -1,0 +1,37 @@
+{
+  "name": "mbed-util",
+  "version": "0.0.0",
+  "description": "mbed utilities library",
+  "keywords": [],
+  "private": true,
+  "author": "Bogdan Marinescu <bogdan.marinescu@arm.com>",
+  "repository": {
+    "url": "git@github.com:ARMmbed/mbed-util.git",
+    "type": "git"
+  },
+  "homepage": "https://github.com/ARMmbed/mbed-util",
+  "licenses": [
+    {
+      "url": "https://spdx.org/licenses/Apache-2.0",
+      "type": "Apache-2.0"
+    }
+  ],
+  "targetDependencies": {
+    "mbed": {
+      "cmsis-core": "~0.2.1",
+      "mbed-alloc": "~0.0.4"
+    }
+  },
+  "testDependencies": {
+    "mbed-core": "~0.2.0"
+  },
+  "scripts": {
+    "testReporter": [
+      "mbedgt",
+      "--digest",
+      "stdin",
+      "-v",
+      "-V"
+    ]
+  }
+}
