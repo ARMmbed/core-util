@@ -24,14 +24,14 @@ class ExtendablePoolAllocator {
 public:
     /** Create a new extendable pool allocator
       * @param elements the size of the initial pool in elements (each of element_size bytes)
-      * @param element_size size of each pool element in bytes (this might be rounded up
-               to satisfy the 'alignment' argument)
       * @param new_pool_elements size of pools that are going to be created to satisfy
       *        allocation requests
+      * @param element_size size of each pool element in bytes (this might be rounded up
+               to satisfy the 'alignment' argument)
       * @param alloc_traits mbed_alloc traits for allocating the pools
       * @param alignment allocation alignment in bytes (must be a power of 2, at least 4)
       */
-    ExtendablePoolAllocator(size_t elements, size_t element_size, size_t new_pool_elements, UAllocTraits_t alloc_traits, unsigned alignment = MBED_UTIL_POOL_ALLOC_DEFAULT_ALIGN);
+    ExtendablePoolAllocator(size_t elements, size_t new_pool_elements, size_t element_size, UAllocTraits_t alloc_traits, unsigned alignment = MBED_UTIL_POOL_ALLOC_DEFAULT_ALIGN);
 
     /** Destructor. It will automatically free all allocated memory
       */
