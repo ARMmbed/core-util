@@ -118,7 +118,7 @@ ExtendablePoolAllocator::pool_link* ExtendablePoolAllocator::create_new_pool(siz
     void *temp = mbed_ualloc(pool_storage_size + sizeof(pool_link), _alloc_traits);
     if (temp == NULL)
         return NULL;
-    pool_link *p = new((char*)temp + pool_storage_size) pool_link(temp, _elements, _element_size, _alignment, prev);
+    pool_link *p = new((char*)temp + pool_storage_size) pool_link(temp, elements, _element_size, _alignment, prev);
     return p;
 }
 

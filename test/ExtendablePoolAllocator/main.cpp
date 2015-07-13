@@ -31,12 +31,13 @@ int main() {
     // Create the allocator
     const size_t initial_elements = 20, new_pool_elements = 12, element_size = 6;
     UAllocTraits_t traits = {0};
-    ExtendablePoolAllocator allocator(initial_elements, element_size, new_pool_elements, traits);
+    ExtendablePoolAllocator allocator(initial_elements, new_pool_elements, element_size, traits);
     MBED_HOSTTEST_ASSERT(allocator.init());
 
     // Fill the first pool
-    for (unsigned i = 0; i < initial_elements; i ++)
+    for (unsigned i = 0; i < initial_elements; i ++) {
         MBED_HOSTTEST_ASSERT(check_value_and_alignment(allocator.alloc()));
+    }
     MBED_HOSTTEST_ASSERT(allocator.get_num_pools() == 1);
 
     // Allocating just another element should add another pool
@@ -44,8 +45,9 @@ int main() {
     MBED_HOSTTEST_ASSERT(check_value_and_alignment(p));
     MBED_HOSTTEST_ASSERT(allocator.get_num_pools() == 2);
     // Fill the new pool 
-    for (unsigned i = 0; i < new_pool_elements - 1; i ++)
+    for (unsigned i = 0; i < new_pool_elements - 1; i ++) {
         MBED_HOSTTEST_ASSERT(check_value_and_alignment(allocator.alloc()));
+    }
     MBED_HOSTTEST_ASSERT(allocator.get_num_pools() == 2);
 
     // Free one previously allocated area
