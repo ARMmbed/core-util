@@ -31,8 +31,8 @@ int main() {
     // Create the allocator
     const size_t initial_elements = 20, new_pool_elements = 12, element_size = 6;
     UAllocTraits_t traits = {0};
-    ExtendablePoolAllocator allocator(initial_elements, new_pool_elements, element_size, traits);
-    MBED_HOSTTEST_ASSERT(allocator.init());
+    ExtendablePoolAllocator allocator;
+    MBED_HOSTTEST_ASSERT(allocator.init(initial_elements, new_pool_elements, element_size, traits));
 
     // Fill the first pool
     for (unsigned i = 0; i < initial_elements; i ++) {

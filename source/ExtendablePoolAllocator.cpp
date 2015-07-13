@@ -12,13 +12,17 @@
 namespace mbed {
 namespace util {
 
-ExtendablePoolAllocator::ExtendablePoolAllocator(size_t elements, size_t new_pool_elements, size_t element_size, UAllocTraits_t alloc_traits, unsigned alignment):
-    _elements(elements), _new_pool_elements(new_pool_elements), _alloc_traits(alloc_traits), _alignment(alignment) {
-    _element_size = PoolAllocator::align_up(element_size, alignment);
+ExtendablePoolAllocator::ExtendablePoolAllocator(): _head(NULL) {
 }
 
-bool ExtendablePoolAllocator::init() {
-    _head = create_new_pool(_elements, NULL);
+bool ExtendablePoolAllocator::init(size_t initial_elements, size_t new_pool_elements, size_t element_size, UAllocTraits_t alloc_traits, unsigned alignment) {
+    if (_head != NULL)
+        return false; // don't initialize twice
+    _new_pool_elements = new_pool_elements;
+    _element_size = PoolAllocator::align_up(element_size, alignment);
+    _alloc_traits = alloc_traits;
+    _alignment = alignment;
+    _head = create_new_pool(initial_elements, NULL);
     return _head != NULL;
 }
 
