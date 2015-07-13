@@ -23,13 +23,13 @@ bool ExtendablePoolAllocator::init() {
 }
 
 ExtendablePoolAllocator::~ExtendablePoolAllocator() {
-    size_t aligned_ptr_size = PoolAllocator::align_up(sizeof(PoolAllocator*), _alignment);
-
-    PoolAllocator *crt = _head, *prev;
-    while (crt) {
-        prev = get_ptr_to_prev(crt);
-        crt->~PoolAllocator();
-        mbed_ufree((void*)((uint32_t)crt - aligned_ptr_size));
+    pool_link *crt = _head, *prev;
+    void *area;
+    while (crt != NULL) {
+        prev = crt->prev;
+        area = crt->allocator.get_start_address();
+        crt->~pool_link(); // this assumes that the PoolAllocator doesn't free its storage!
+        mbed_ufree(area);
         crt = prev;
     }
 }
@@ -38,22 +38,22 @@ void* ExtendablePoolAllocator::alloc() {
     // Try the current pool first
     if (NULL == _head)
         return NULL;
-    void *blk = _head->alloc();
+    void *blk = _head->allocator.alloc();
     if (blk != NULL)
         return blk;
 
     // Try all the other pools
-    PoolAllocator *prev_head = _head;
-    PoolAllocator *crt = get_ptr_to_prev(prev_head);
+    pool_link *prev_head = _head;
+    pool_link *crt = prev_head->prev;
     while (crt != NULL) {
-        if ((blk = crt->alloc()) != NULL) {
+        if ((blk = crt->allocator.alloc()) != NULL) {
             return blk;
         }
-        crt = get_ptr_to_prev(crt);
+        crt = crt->prev;
     }
     // If someone else allocated a new pool meanwhile, use it
     if (prev_head != _head) {
-        if ((blk = _head->alloc()) != NULL) {
+        if ((blk = _head->allocator.alloc()) != NULL) {
             return blk;
         }
     }
@@ -63,14 +63,14 @@ void* ExtendablePoolAllocator::alloc() {
     {
         CriticalSectionLock lock; // execute with interrupts disabled
         if (_head != prev_head) { // if someone else already allocated a new pool, use it
-            if ((blk = _head->alloc()) != NULL) {
+            if ((blk = _head->allocator.alloc()) != NULL) {
                 return blk;
             }
         }
         // Create a new pool and link it in the list of pools
         if ((crt = create_new_pool(_new_pool_elements, _head)) != NULL) {
             _head = crt;
-            return crt->alloc();
+            return crt->allocator.alloc();
         }
     }
     return NULL;
@@ -87,48 +87,39 @@ void *ExtendablePoolAllocator::calloc() {
 }
 
 void ExtendablePoolAllocator::free(void *p) {
-    PoolAllocator *crt = _head;
+    pool_link *crt = _head;
 
     // Delegate freeing to the pool that owns the pointer
     while (crt != NULL) {
-        if (crt->owns(p)) {
-            crt->free(p);
+        if (crt->allocator.owns(p)) {
+            crt->allocator.free(p);
             return;
         }
-        crt = get_ptr_to_prev(crt);
+        crt = crt->prev;
     }
 }
 
 unsigned ExtendablePoolAllocator::get_num_pools() const {
-    PoolAllocator *crt = _head;
+    pool_link *crt = _head;
     unsigned cnt = 0;
 
     while (crt != NULL) {
         cnt ++;
-        crt = get_ptr_to_prev(crt);
+        crt = crt->prev;
     }
     return cnt;
 }
 
-PoolAllocator* ExtendablePoolAllocator::create_new_pool(size_t elements, PoolAllocator *prev) const {
+ExtendablePoolAllocator::pool_link* ExtendablePoolAllocator::create_new_pool(size_t elements, pool_link *prev) const {
     // Create a pool instance + the actual pool space + a link to the previous pool allocator in the chain in a contigous memory area.
-    // Layout: pointer to previous pool | alignment(if any) | pool instance | alignment (if any) | pool storage area
-    // Returns a pointer to the new pool instance
-    size_t aligned_ptr_size = PoolAllocator::align_up(sizeof(PoolAllocator*), _alignment);
-    size_t aligned_pool_size = PoolAllocator::align_up(sizeof(PoolAllocator), _alignment);
-    size_t memsize = aligned_ptr_size + aligned_pool_size + PoolAllocator::get_pool_size(elements, _element_size, _alignment);
-    void *temp = mbed_ualloc(memsize, _alloc_traits);
+    // Layout: pool storage area | pool_link structure (pointer to previous pool and PoolAllocator instance)
+    // Since the pool storage area aligns all the allocations internally to at least 4 bytes, the pool_link address will be correctly aligned
+    size_t pool_storage_size = PoolAllocator::get_pool_size(elements, _element_size, _alignment);
+    void *temp = mbed_ualloc(pool_storage_size + sizeof(pool_link), _alloc_traits);
     if (temp == NULL)
         return NULL;
-    void *pinst = (PoolAllocator*)((uint32_t)temp + aligned_ptr_size);
-    void *pstorage = (void*)((uint32_t)temp + aligned_ptr_size + aligned_pool_size);
-    *((PoolAllocator**)temp) = prev;
-    return new(pinst) PoolAllocator(pstorage, _elements, _element_size, _alignment);
-}
-
-PoolAllocator* ExtendablePoolAllocator::get_ptr_to_prev(PoolAllocator *p) const {
-    size_t aligned_ptr_size = PoolAllocator::align_up(sizeof(PoolAllocator*), _alignment);
-    return *(PoolAllocator**)((uint32_t)p - aligned_ptr_size);
+    pool_link *p = new((char*)temp + pool_storage_size) pool_link(temp, _elements, _element_size, _alignment, prev);
+    return p;
 }
 
 } // namespace util

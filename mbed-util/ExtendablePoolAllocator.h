@@ -66,10 +66,18 @@ public:
     unsigned get_num_pools() const;
 
 private:
-    PoolAllocator *create_new_pool(size_t elements, PoolAllocator *prev) const;
-    PoolAllocator* get_ptr_to_prev(PoolAllocator *p) const;
+    struct pool_link {
+        pool_link(void *start, size_t elements, size_t element_size, unsigned alignment, pool_link *_prev):
+            prev(_prev),
+            allocator(start, elements, element_size, alignment) {
+        }
 
-    PoolAllocator *volatile _head;
+        pool_link *prev;
+        PoolAllocator allocator;
+    };
+    pool_link *create_new_pool(size_t elements, pool_link *prev) const;
+
+    pool_link *volatile _head;
     size_t _elements, _element_size, _new_pool_elements;
     UAllocTraits_t _alloc_traits;
     unsigned _alignment;
@@ -79,3 +87,4 @@ private:
 } // namespace mbed
 
 #endif // #ifndef __MBED_UTIL_EXTENDABLE_POOL_ALLOCATOR_H__
+

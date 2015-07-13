@@ -59,6 +59,10 @@ uint32_t PoolAllocator:: align_up(uint32_t n, uint32_t alignment) {
     return (n + alignment - 1) & ~(alignment - 1);
 }
 
+void* PoolAllocator::get_start_address() const {
+    return _start;
+}
+
 void PoolAllocator::_init() {
     _free_block = _start;
 

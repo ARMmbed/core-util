@@ -69,6 +69,11 @@ public:
       */
     static uint32_t align_up(uint32_t n, uint32_t alignment);
 
+    /** Returns the start address of the pool
+      * @returns start address
+      */
+    void* get_start_address() const;
+
 private:
     void _init();
 
