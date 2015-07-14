@@ -55,15 +55,8 @@ void* ExtendablePoolAllocator::alloc() {
         }
         crt = crt->prev;
     }
-    // If someone else allocated a new pool meanwhile, use it
-    if (prev_head != _head) {
-        if ((blk = _head->allocator.alloc()) != NULL) {
-            return blk;
-        }
-    }
 
     // Not enough space, need to create another pool
-    prev_head = _head;
     {
         CriticalSectionLock lock; // execute with interrupts disabled
         if (_head != prev_head) { // if someone else already allocated a new pool, use it
