@@ -4,11 +4,15 @@
 #define __MBED_UTIL_POOL_ALLOCATOR_H__
 
 #include <stddef.h>
+#include <stdint.h>
 
 // [TODO] this should probably be 8, but at the moment our allocators are 
 // aligned at 4 bytes
 // [TODO] where should the system allocator alignment be defined?
 #define MBED_UTIL_POOL_ALLOC_DEFAULT_ALIGN       4
+// [TODO] currently, the requested alignment (in the PoolAllocator constructor) must be
+// less than or equal to MBED_UTIL_POOL_ALLOC_DEFAULT_ALIGN, which effectively limits it to
+// 4 bytes for now
 
 namespace mbed {
 namespace util {
@@ -24,7 +28,7 @@ public:
       * @param elements the size of pool in elements (each of element_size bytes)
       * @param element_size size of each pool element in bytes (this might be rounded up
                to satisfy the 'alignment' argument)
-      * @param alignment allocation alignment in bytes
+      * @param alignment allocation alignment in bytes (must be a power of 2, at least 4)
       */
     PoolAllocator(void *start, size_t elements, size_t element_size, unsigned alignment = MBED_UTIL_POOL_ALLOC_DEFAULT_ALIGN);
 
@@ -57,6 +61,18 @@ public:
       * @returns true if the pointer is inside this pool, false otherwise
       */
     bool owns(void *p) const;
+
+    /** Aligns a quantity up to the given alignment (which must be a power of 2)
+      * @param n the quantity to align
+      * @param alignment the alignment
+      * @returns the aligned quantity
+      */
+    static uint32_t align_up(uint32_t n, uint32_t alignment);
+
+    /** Returns the start address of the pool
+      * @returns start address
+      */
+    void* get_start_address() const;
 
 private:
     void _init();

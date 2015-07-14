@@ -11,7 +11,7 @@ namespace util {
 
 PoolAllocator::PoolAllocator(void *start, size_t elements, size_t element_size, size_t alignment):
     _start(start), _element_size(element_size) {
-    _element_size = (element_size + alignment - 1) & ~(alignment - 1);
+    _element_size = align_up(element_size, alignment);
     _end = (void*)((uint8_t*)start + _element_size * elements);
     _init();
 }
@@ -41,7 +41,7 @@ bool PoolAllocator::owns(void *p) const {
 }
 
 size_t PoolAllocator::get_pool_size(size_t elements, size_t element_size, unsigned alignment) {
-    element_size = (element_size + alignment - 1) & ~(alignment - 1);
+    element_size = align_up(element_size, alignment);
     return element_size * elements;
 }
 
@@ -53,6 +53,14 @@ void* PoolAllocator::calloc() {
     for(unsigned i = 0; i < _element_size / 4; i ++, blk ++)
         *blk = 0;
     return blk;
+}
+
+uint32_t PoolAllocator:: align_up(uint32_t n, uint32_t alignment) {
+    return (n + alignment - 1) & ~(alignment - 1);
+}
+
+void* PoolAllocator::get_start_address() const {
+    return _start;
 }
 
 void PoolAllocator::_init() {
