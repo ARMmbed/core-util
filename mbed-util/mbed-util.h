@@ -26,7 +26,9 @@ do {                                                     \
 
 #endif
 
-void mbed_util_runtime_error(const char* fmt, ...);
+#define MBED_UTIL_RUNTIME_ERROR(...)        mbed_util_runtime_error_internal(__FILE__, __LINE__, __VA_ARGS__)
+
+void mbed_util_runtime_error_internal(const char *fname, int line, const char* fmt, ...);
 void mbed_util_assert_internal(const char* expr, const char *fname, int line, const char *msg);
 
 #ifdef __cplusplus

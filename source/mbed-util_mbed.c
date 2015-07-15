@@ -6,12 +6,14 @@
 #include <stdarg.h>
 #include "device.h"
 #include "mbed/mbed_interface.h"
+#include "mbed-util/mbed-util.h"
 #if DEVICE_STDIO_MESSAGES
 #include <stdio.h>
 #endif
 
-void mbed_util_runtime_error(const char* format, ...) {
+void mbed_util_runtime_error_internal(const char *file, int line, const char* format, ...) {
 #if DEVICE_STDIO_MESSAGES
+    fprintf(stderr, "Runtime error in file %s, line %d: ", file, line);
     va_list arg;
     va_start(arg, format);
     vfprintf(stderr, format, arg);
