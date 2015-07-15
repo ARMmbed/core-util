@@ -138,7 +138,7 @@ public:
         return true;
     }
 
-    /** Return the number of zones (linked memory areas) in this pool
+    /** Return the number of zones (linked memory areas) in this array
       * @returns number of zones
       */
     unsigned get_num_zones() const {
@@ -157,6 +157,13 @@ public:
       */
     unsigned get_num_elements() const {
         return _elements;
+    }
+
+    /** Returns the capacity of the array
+      * @returns capacity of the array
+      */
+    unsigned get_capacity() const {
+        return _capacity;
     }
 
 private:
@@ -201,7 +208,7 @@ private:
             MBED_UTIL_RUNTIME_ERROR("Attempt to use uninitialized Array %p\r\n", this);
         }
         if (idx >= _elements) {
-            MBED_UTIL_RUNTIME_ERROR("Attempt to use invalid inddx %u in Array %p\r\n", idx, this);
+            MBED_UTIL_RUNTIME_ERROR("Attempt to use invalid index %u in Array %p\r\n", idx, this);
         }
     }
 
