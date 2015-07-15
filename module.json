@@ -18,12 +18,10 @@
   ],
   "targetDependencies": {
     "mbed": {
-      "cmsis-core": "~0.2.1",
-      "mbed-alloc": "~0.0.4"
+      "cmsis-core": "~0.2.2",
+      "mbed-alloc": "~0.0.4",
+      "mbed-core": "~0.2.4"
     }
-  },
-  "testDependencies": {
-    "mbed-core": "~0.2.0"
   },
   "scripts": {
     "testReporter": [
