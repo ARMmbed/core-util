@@ -138,6 +138,24 @@ public:
         return true;
     }
 
+    /** Removes the last element in the array
+      */
+    void pop_back() {
+        unsigned idx = 0;
+        bool destroy = false;
+        {
+            CriticalSectionLock lock;
+            if (_elements > 0) {
+                idx = --_elements;
+                destroy = true;
+            }
+        }
+        if (destroy) {
+            T *p = get_element_address(idx);
+            p->~T();
+        }
+    }
+
     /** Return the number of zones (linked memory areas) in this array
       * @returns number of zones
       */
@@ -214,8 +232,8 @@ private:
 
     array_link *volatile _head;
     UAllocTraits_t _alloc_traits;
-    size_t _element_size, _grow_capacity, _elements;
-    volatile unsigned _capacity;
+    size_t _element_size, _grow_capacity;
+    volatile unsigned _capacity, _elements;
     unsigned _alignment;
 };
 

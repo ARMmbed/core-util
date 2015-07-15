@@ -37,11 +37,18 @@ static void test_pod() {
         MBED_HOSTTEST_ASSERT(array.at(i + initial_capacity) == 1000 + i);
     }
     MBED_HOSTTEST_ASSERT(array.get_num_zones() == 2);
+    unsigned save_for_later = array[initial_capacity + grow_capacity - 1];
     // Add yet another element, which should result in the creation of another zone
     array.push_back(10000);
     MBED_HOSTTEST_ASSERT(array[initial_capacity + grow_capacity] == 10000);
     MBED_HOSTTEST_ASSERT(array.get_num_zones() == 3);
     MBED_HOSTTEST_ASSERT(array.get_num_elements() == initial_capacity + grow_capacity + 1);
+
+    // Remove the last element
+    array.pop_back();
+    MBED_HOSTTEST_ASSERT(array.get_num_elements() == initial_capacity + grow_capacity);
+    MBED_HOSTTEST_ASSERT(array[array.get_num_elements() - 1] == save_for_later);
+    MBED_HOSTTEST_ASSERT(array.get_num_zones() == 3); // the array doesn't (yet?) shrink
 
     // Simple bubble sort test illustrating moving around elements in the array
     const size_t total = initial_capacity + grow_capacity;
@@ -113,8 +120,11 @@ static void test_non_pod() {
         const Test& t = array[idx];
         MBED_HOSTTEST_ASSERT(t == Test(idx, 'b'));
     }
+
+    // Pop the last element from array (checks if destructor is called)
+    array.pop_back();
    
-    MBED_HOSTTEST_ASSERT(array.get_num_elements() == initial_capacity);
+    MBED_HOSTTEST_ASSERT(array.get_num_elements() == initial_capacity - 1);
     MBED_HOSTTEST_ASSERT(array.get_num_zones() == 1);
 }
 
