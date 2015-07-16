@@ -7,14 +7,14 @@
 
 using namespace mbed::util;
 
-template<typename T>
+template<typename T, typename Compare>
 static void test_heap(const T* data, unsigned data_size, const T* sorted_data,
                       const T* to_remove, unsigned removed_size, const T* sorted_after_remove,
-                      const T& not_in_heap, typename BinaryHeap<T>::cmp_fn_t cmp_fn) {
-    BinaryHeap<T> heap;
+                      const T& not_in_heap) {
+    BinaryHeap<T, Compare> heap;
     const size_t initial_capacity = data_size / 2, grow_capacity = (data_size * 3) / 2, alignment = 4;
     UAllocTraits_t traits = {0};
-    MBED_HOSTTEST_ASSERT(heap.init(initial_capacity, grow_capacity, traits, cmp_fn, alignment));
+    MBED_HOSTTEST_ASSERT(heap.init(initial_capacity, grow_capacity, traits, alignment));
 
    // Fill the heap with data
     for (unsigned i = 0; i < data_size; i++) {
@@ -48,17 +48,12 @@ static void test_heap(const T* data, unsigned data_size, const T* sorted_data,
     MBED_HOSTTEST_ASSERT(heap.get_num_elements() == data_size - removed_size);
     // Remove and check root at each step
     for (unsigned i = 0; i < data_size - removed_size; i ++) {
-        T root = heap.get_root();
+        T root = heap.pop_root();
         MBED_HOSTTEST_ASSERT(root == sorted_after_remove[i]);
-        heap.remove_root();
         MBED_HOSTTEST_ASSERT(heap.is_consistent());
     }
     MBED_HOSTTEST_ASSERT(heap.is_empty());
     MBED_HOSTTEST_ASSERT(heap.get_num_elements() == 0);
-}
-
-bool min_int_cmp(const int& e1, const int& e2) {
-    return e1 <= e2;
 }
 
 static void test_min_heap_pod() {
@@ -68,14 +63,10 @@ static void test_min_heap_pod() {
     int sorted_after_remove[] = {0, 7, 13, 16, 20, 1000};
 
     printf("********** Starting test_min_heap_pod()\r\n");
-    test_heap<int>(data, sizeof(data)/sizeof(int), sorted_data,
+    test_heap<int, MinCompare<int> >(data, sizeof(data)/sizeof(int), sorted_data,
                    to_remove, sizeof(to_remove)/sizeof(int), sorted_after_remove,
-                   2000, min_int_cmp);
+                   2000);
     printf("********** Ending test_min_heap_pod()\r\n");
-}
-
-bool max_unsigned_cmp(const unsigned& e1, const unsigned& e2) {
-    return e1 >= e2;
 }
 
 static void test_max_heap_pod() {
@@ -85,9 +76,9 @@ static void test_max_heap_pod() {
     unsigned sorted_after_remove[] = {123, 77, 53, 19, 17, 0};
 
     printf("********** Starting test_max_heap_pod()\r\n");
-    test_heap<unsigned>(data, sizeof(data)/sizeof(unsigned), sorted_data,
+    test_heap<unsigned, MaxCompare<unsigned> >(data, sizeof(data)/sizeof(unsigned), sorted_data,
                    to_remove, sizeof(to_remove)/sizeof(unsigned), sorted_after_remove,
-                   2000, max_unsigned_cmp);
+                   2000);
     printf("********** Ending test_max_heap_pod()\r\n");
 }
 
@@ -108,16 +99,19 @@ struct Test {
         return (t._a == _a) && (t._c == _c);
     }
 
+    bool operator <=(const Test& t) const {
+        return _a <= t._a;
+    }
+
+    bool operator >=(const Test& t) const {
+        return _a >= t._a;
+    }
+
     int _a;
     uint8_t _c;
     static int inst_count;
 };
 int Test::inst_count = 0;
-
-bool min_test_cmp(const Test& e1, const Test& e2) {
-    // Sort only by '_a'
-    return e1._a <= e2._a;
-}
 
 static void test_min_heap_non_pod() {
     Test data[] = {20, 13, 8, 7, 100, -50, 0, 16, 1000, 2};
@@ -126,15 +120,10 @@ static void test_min_heap_non_pod() {
     Test sorted_after_remove[] = {0, 7, 13, 16, 20, 1000};
  
     printf("********** Starting test_min_heap_non_pod()\r\n");
-    test_heap<Test>(data, sizeof(data)/sizeof(Test), sorted_data,
+    test_heap<Test, MinCompare<Test> >(data, sizeof(data)/sizeof(Test), sorted_data,
                    to_remove, sizeof(to_remove)/sizeof(Test), sorted_after_remove,
-                   2000, min_test_cmp);
+                   2000);
     printf("********** Ending test_min_heap_non_pod()\r\n");
-}
-
-bool max_test_cmp(const Test& e1, const Test& e2) {
-    // Sort only by '_a'
-    return e1._a >= e2._a;
 }
 
 static void test_max_heap_non_pod() {
@@ -144,9 +133,9 @@ static void test_max_heap_non_pod() {
     Test sorted_after_remove[] = {764, 734, 325, 291, 136, 62, -59, -380, -382, -591, -700, -736, -930};
  
     printf("********** Starting test_max_heap_non_pod()\r\n");
-    test_heap<Test>(data, sizeof(data)/sizeof(Test), sorted_data,
+    test_heap<Test, MaxCompare<Test> >(data, sizeof(data)/sizeof(Test), sorted_data,
                    to_remove, sizeof(to_remove)/sizeof(Test), sorted_after_remove,
-                   2000, max_test_cmp);
+                   2000);
     printf("********** Ending test_max_heap_non_pod()\r\n");
 }
 

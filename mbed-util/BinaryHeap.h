@@ -16,40 +16,79 @@
   *
   * Becuase it uses an Array, it can grow automatically to accomodate more elements.
   *
-  * The elements are sorted according to a user supplied comparison function, which can
-  * make the implementation behave like a min-heap (the smallest element is always in the
-  * root of the heap) or max-heap (the largest element is always in the root of the heap)
+  * The elements are sorted according to a user supplied comparison function, which is
+  * implemented in a comparator class. Default versions for both min-heaps (MinCompare)
+  * and max-heaps (MaxCompare) are provided as part of the implementation.
+  *
+  * Usage example:
+  *
+  * @code
+  * #include "mbed-util/BinaryHeap.h"
+  *
+  * class A {
+  * public:
+  *    bool operator <=(const A& other) {...}
+  * };
+  *
+  * int main() {
+  *     BinaryHeap<int> minh; // implicit MinCompare (min-heap)
+  *     BinaryHeap<int, MaxCompare<int> > maxh; // explicit MaxCompare (max-heap)
+  *
+  *     // The MinCompare/MaxCompare classes can be used for classes/structure as
+  *     // long as they provide 'operator >=' or 'operator <=' respectively
+  *     BinaryHeap<A, MinCompare<A> > minh_a;
+  * }
+  * @endcode
   */
 namespace mbed {
 namespace util {
 
-template <typename T>
+/** Simple class that implements the compare function for min-heaps
+  */
+template<typename T>
+class MinCompare {
+public:
+    /** Function call operator used for comparing elements
+      * @param e1 the first element
+      * @param e2 the second element
+      * @returns true if e1 <= e2, false otherwise
+      */
+    bool operator ()(const T& e1, const T& e2) const {
+        return e1 <= e2;
+    }
+};
+
+/** Simple class that implements the compare function for max-heaps
+  */
+template<typename T>
+class MaxCompare {
+public:
+    /** Function call operator used for comparing elements
+      * @param e1 the first element
+      * @param e2 the second element
+      * @returns true if e1 >= e2, false otherwise
+      */
+    bool operator ()(const T& e1, const T& e2) const {
+        return e1 >= e2;
+    }
+};
+
+template <typename T, typename Comparator=MinCompare<T> >
 class BinaryHeap {
 public:
-    /** Heap's compare function
-      * @param e1 first element to compare
-      * @param e2 second element to compare
-      * @returns true if e1 needs to come before e2 in the heap, false otherwise:
-      *          - for a min heap, a simple implementation is 'return e1 <= e2'
-      *          - for a max heap, a simple implementation is 'return e1 >= e2'
-      */
-    typedef bool (*cmp_fn_t)(const T& e1, const T& e2);
-
     /** Construct a new binary heap
       */
-    BinaryHeap(): _array() {
+    BinaryHeap(): _array(), _comparator() {
     }
 
     /** Initialize the heap
       * @param initial_capacity initial capacity of the heap
       * @param grow_capacity number of elements to add when the heap's capacity is exceeded
       * @param alloc_traits allocator traits (for mbed_ualloc)
-      * @param cmp_fn_t pointer to the heap's comparison function
       * @param alignment alignment of each element in the array
       * @returns true if the initialization succeeded, false otherwise
       */
-    bool init(size_t initial_capacity, size_t grow_capacity, UAllocTraits_t alloc_traits, cmp_fn_t comp_func, unsigned alignment = MBED_UTIL_POOL_ALLOC_DEFAULT_ALIGN) {
-        _comp_func = comp_func;
+    bool init(size_t initial_capacity, size_t grow_capacity, UAllocTraits_t alloc_traits, unsigned alignment = MBED_UTIL_POOL_ALLOC_DEFAULT_ALIGN) {
         _elements = 0;
         return _array.init(initial_capacity, grow_capacity, alloc_traits, alignment);
     }
@@ -76,6 +115,19 @@ public:
             MBED_UTIL_RUNTIME_ERROR("get_root() called on an empty BinaryHeap");
         }
         return _array[0];
+    }
+
+    /** Remove the root of the heap and return a copy of its value
+      * @returns copy of the root
+      */
+    T pop_root() {
+         if (_elements == 0) {
+            MBED_UTIL_RUNTIME_ERROR("get_root() called on an empty BinaryHeap");
+        }
+        CriticalSectionLock lock;
+        T temp = _array[0];
+        remove_root();
+        return temp;
     }
 
     /** Removes the element at the root of the heap, possibly re-shaping the heap
@@ -111,7 +163,7 @@ public:
             return false;
         {
             CriticalSectionLock lock;
-            unsigned i;
+            size_t i;
             for (i = 0; i < _elements; i ++) {
                 if (e == _array[i])
                     break;
@@ -129,13 +181,13 @@ public:
     /** Check the heap's consistency by applying the user supplied comparison function to its nodes
       * @returns true if the heap is consistent, false otherwise
       */
-    bool is_consistent(unsigned node = 0) const {
+    bool is_consistent(size_t node = 0) const {
         if (node >= _elements)
             return true;
-        unsigned left = _left(node), right = _right(node);
-        if ((left < _elements) && !_comp_func(_array[node], _array[left]))
+        size_t left = _left(node), right = _right(node);
+        if ((left < _elements) && !_comparator(_array[node], _array[left]))
             return false;
-        if ((right < _elements) && !_comp_func(_array[node], _array[right]))
+        if ((right < _elements) && !_comparator(_array[node], _array[right]))
             return false;
        return is_consistent(left) && is_consistent(right);
     }
@@ -148,45 +200,45 @@ public:
     }
 
 private:
-    unsigned _left(unsigned i) const {
+    size_t _left(size_t i) const {
         return 2 * i + 1;
     }
 
-    unsigned _right(unsigned i) const {
+    size_t _right(size_t i) const {
         return 2 * i + 2;
     }
 
-    unsigned _parent(unsigned i) const {
+    size_t _parent(size_t i) const {
         return (i - 1) / 2;
     }
 
-    void _propagate_up(unsigned node) {
+    void _propagate_up(size_t node) {
         // This is called when a node is added in the last position in the heap
         // We might need to move the node up towards the parent until the heap property
         // is satisfied
-        unsigned parent = _parent(node);
+        size_t parent = _parent(node);
         // Move the node up until it satisfies the heap property
-        while ((node > 0) && _comp_func(_array[node], _array[parent])) {
+        while ((node > 0) && _comparator(_array[node], _array[parent])) {
             _swap(node, parent);
             node = parent;
             parent = _parent(node);
         }
     }
 
-    void _propagate_down(unsigned node) {
+    void _propagate_down(size_t node) {
         // This is called when an existing node is removed
         // When that happens, it is replaced with the node at the last position in the heap
         // Since that might make the heap inconsistent, we need to move the node down if its
         // value does not respect the comparison function when compared with its left and
         // right children. 
         while (true) {
-            unsigned left = _left(node), right = _right(node), temp;
-            bool change_left = (left < _elements) && !_comp_func(_array[node], _array[left]);
-            bool change_right = (right < _elements) && !_comp_func(_array[node], _array[right]);
+            size_t left = _left(node), right = _right(node), temp;
+            bool change_left = (left < _elements) && !_comparator(_array[node], _array[left]);
+            bool change_right = (right < _elements) && !_comparator(_array[node], _array[right]);
             if (change_left && change_right) {
                 // If both left/right should change, use the comparison function to figure out
                 // which way to go
-                temp = _comp_func(_array[left], _array[right]) ? left : right;
+                temp = _comparator(_array[left], _array[right]) ? left : right;
             } else if (change_left) {
                 temp = left;
             } else if (change_right) {
@@ -199,7 +251,7 @@ private:
         }
     }
 
-    void _swap(unsigned pos1, unsigned pos2) {
+    void _swap(size_t pos1, size_t pos2) {
         if (pos1 != pos2) {
             T temp = _array[pos1];
             _array[pos1] = _array[pos2];
@@ -208,8 +260,8 @@ private:
     }
 
     Array<T> _array;
-    cmp_fn_t _comp_func;
-    volatile unsigned _elements;
+    Comparator _comparator;
+    volatile size_t _elements;
 };
 
 } // namespace util
