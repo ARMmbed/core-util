@@ -78,7 +78,7 @@ class BinaryHeap {
 public:
     /** Construct a new binary heap
       */
-    BinaryHeap(): _array(), _comparator() {
+    BinaryHeap(const Comparator& comparator = Comparator()): _array(), _comparator(comparator) {
     }
 
     /** Initialize the heap
