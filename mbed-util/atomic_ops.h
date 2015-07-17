@@ -5,6 +5,7 @@
 #define __MBED_UTIL_ATOMIC_OPS_H__
 
 #include <stdint.h>
+#include "cmsis-core/core_generic.h"
 
 namespace mbed {
 namespace util {
@@ -17,7 +18,8 @@ namespace util {
  * up-to-date information; if the value had been updated by another thread in
  * the meantime, the write would fail due to a mismatched expectedCurrentValue.
  *
- * Refer to https://en.wikipedia.org/wiki/Compare-and-swap
+ * Refer to https://en.wikipedia.org/wiki/Compare-and-set [which may redirect
+ * you to the article on compare-and swap].
  *
  * @param  ptr                  The target memory location.
  * @param  expectedCurrentValue The expected current value of the data at the location.
@@ -54,12 +56,43 @@ namespace util {
  *     return value + a
  * }
  *
- * We implement three overloaded versions of atomic_cas to correspond with byte,
- * half-word, and word instructions.
+ * For Cortex-M3 and above, we use the load/store-exclusive instructions to
+ * implement atomic_cas, so we provide three overloaded versions corresponding
+ * to the byte, half-word, and word variants of the instructions; for Cortex-M0,
+ * synchronization requires blocking interrupts, and we have the liberty of
+ * creating a generic templatized variant of atomic_cas.
  */
+#if (__CORTEX_M >= 0x03)
 bool atomic_cas(uint8_t  *ptr, uint8_t  &expectedCurrentValue, uint8_t  desiredValue);
 bool atomic_cas(uint16_t *ptr, uint16_t &expectedCurrentValue, uint16_t desiredValue);
 bool atomic_cas(uint32_t *ptr, uint32_t &expectedCurrentValue, uint32_t desiredValue);
+#elif (__CORTEX_M == 0x00)
+template<typename T>
+bool atomic_cas(T *ptr, T &expectedCurrentValue, T desiredValue)
+{
+    bool rc = true;
+
+    uint32_t previousPRIMASK = __get_PRIMASK();
+    __disable_irq();
+
+    do {
+        T currentValue = *ptr;
+        if (currentValue != expectedCurrentValue) {
+            expectedCurrentValue = currentValue;
+            rc = false;
+            break;
+        }
+
+        *ptr = desiredValue;
+    } while (0);
+
+    if (!previousPRIMASK) {
+        __enable_irq();
+    }
+
+    return rc;
+}
+#endif /* #if (__CORTEX_M == 0x00) */
 
 /**
  * Atomic increment.
