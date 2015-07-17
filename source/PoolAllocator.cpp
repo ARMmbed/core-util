@@ -6,6 +6,8 @@
 #include <stdint.h>
 #include <stdio.h>
 
+#include "mbed-util/atomic_ops.h"
+
 namespace mbed {
 namespace util {
 
@@ -17,22 +19,24 @@ PoolAllocator::PoolAllocator(void *start, size_t elements, size_t element_size, 
 }
 
 void* PoolAllocator::alloc() {
-    void **free;
-
-    do {
-        if((free = (void**)__LDREXW((uint32_t*)&_free_block)) == NULL) {
-            __CLREX();
-            break;
+    uint32_t prev_free = (uint32_t)_free_block;
+    while (true) {
+        void **const new_free = (void **)(*((void **)prev_free));
+        if (atomic_cas((uint32_t*)&_free_block, prev_free, (uint32_t)new_free)) {
+            return (void*)new_free;
         }
-    } while(__STREXW((uint32_t)*free, (uint32_t*)&_free_block));
-    return (void*)free;
+    }
 }
 
 void PoolAllocator::free(void* p) {
-    if(owns(p)) {
-        do {
-            *((void**)p) = (void*)__LDREXW((uint32_t*)&_free_block);
-        } while(__STREXW((uint32_t)p, (uint32_t*)&_free_block));
+    if (owns(p)) {
+        uint32_t prev_free = (uint32_t)_free_block;
+        while (true) {
+            *((void**)p) = (void*)prev_free;
+            if (atomic_cas((uint32_t*)&_free_block, prev_free, (uint32_t)p)) {
+                break;
+            }
+        }
     }
 }
 
