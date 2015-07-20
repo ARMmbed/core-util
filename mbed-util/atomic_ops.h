@@ -22,9 +22,13 @@ namespace util {
  * you to the article on compare-and swap].
  *
  * @param  ptr                  The target memory location.
- * @param  expectedCurrentValue The expected current value of the data at the location.
- *                              This computed 'desiredValue' should be a function of this current value.
- * @param  desiredValue         The new value computed based on 'expectedCurrentValue'.
+ * @param[in/out] expectedCurrentValue The expected current value of the data at the location.
+ *                              The computed 'desiredValue' should be a function of this current value.
+ *                              @Note: This is an in-out parameter. In the
+ *                              failure case of atomic_cas (where the
+ *                              destination isn't set), expectedCurrentValue is
+ *                              updated with the current value.
+ * @param[in] desiredValue      The new value computed based on 'expectedCurrentValue'.
  *
  * @return                      true if the memory location was atomically
  *                              updated with the desired value (after verifying
