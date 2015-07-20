@@ -75,16 +75,13 @@ bool atomic_cas(T *ptr, T &expectedCurrentValue, T desiredValue)
     uint32_t previousPRIMASK = __get_PRIMASK();
     __disable_irq();
 
-    do {
-        T currentValue = *ptr;
-        if (currentValue != expectedCurrentValue) {
-            expectedCurrentValue = currentValue;
-            rc = false;
-            break;
-        }
-
+    T currentValue = *ptr;
+    if (currentValue == expectedCurrentValue) {
         *ptr = desiredValue;
-    } while (0);
+    } else {
+        expectedCurrentValue = currentValue;
+        rc = false;
+    }
 
     if (!previousPRIMASK) {
         __enable_irq();
