@@ -141,17 +141,15 @@ public:
     /** Removes the last element in the array
       */
     void pop_back() {
-        unsigned idx = 0;
-        bool destroy = false;
+        T *p = NULL;
         {
             CriticalSectionLock lock;
             if (_elements > 0) {
-                idx = --_elements;
-                destroy = true;
+                p = get_element_address(_elements - 1);
+                --_elements;
             }
         }
-        if (destroy) {
-            T *p = get_element_address(idx);
+        if (p != NULL) {
             p->~T();
         }
     }
