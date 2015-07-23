@@ -60,26 +60,18 @@ namespace util {
  *     }
  *     return value + a
  * }
- *
- * atomic_cas() is implemented using a template.
- *
- * For ARMv7-M and above, we use the load/store-exclusive instructions to
- * implement atomic_cas, so we provide three template specializations corresponding
- * to the byte, half-word, and word variants of the instructions; for Cortex-M0,
- * synchronization requires blocking interrupts, and we have the liberty of
- * creating a generic templatized variant of atomic_cas.
  */
-#if (__CORTEX_M >= 0x03)
 template<typename T>
 bool atomic_cas(T *ptr, T *expectedCurrentValue, T desiredValue);
 
-/* The following provide specializations for the above template--corresponding
- * to instructions available on the underlying architecture.
- *
- * If you're using atomic_cas() on a type which isn't covered by one of the low-
- * level primitives for exclusive access, synchronization is supported by
- * blocking interrupts--as in the default template below.
+/* For ARMv7-M and above, we use the load/store-exclusive instructions to
+ * implement atomic_cas, so we provide three template specializations
+ * corresponding to the byte, half-word, and word variants of the instructions;
+ * for architectures which don't offer load-store-exclusive primitives, or in
+ * case of target data-types larger than a word, we offer a generic templatized
+ * variant which blocks interrupts.
  */
+#if (__CORTEX_M >= 0x03)
 template <>
 bool mbed::util::atomic_cas<uint8_t>(uint8_t *ptr, uint8_t *expectedCurrentValue, uint8_t desiredValue)
 {
@@ -121,7 +113,7 @@ bool mbed::util::atomic_cas<uint32_t>(uint32_t *ptr, uint32_t *expectedCurrentVa
 #endif /* #if (__CORTEX_M >= 0x03) */
 
 /* The default template implementation for architectures not offering load-store-
- * exclusive instructions, or for target types not covered by such primitives.*/
+ * exclusive instructions, or for target types not covered by such primitives. */
 template<typename T>
 bool atomic_cas(T *ptr, T *expectedCurrentValue, T desiredValue)
 {
