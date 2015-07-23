@@ -56,7 +56,7 @@ namespace util {
  *     done = false
  *     *value = *p // This fetch operation need not be atomic.
  *     while not done {
- *         done = atomic_cas(p, &value, value + a) // value gets updated automatically until success
+ *         done = atomic_cas(p, &value, value + a) // *value gets updated automatically until success
  *     }
  *     return value + a
  * }
