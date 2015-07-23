@@ -77,9 +77,8 @@ bool atomic_cas(T *ptr, T *expectedCurrentValue, T desiredValue);
  * to instructions available on the underlying architecture.
  *
  * If you're using atomic_cas() on a type which isn't covered by one of the low-
- * level primitives, then you might want to do something else. We don't want to
- * permit arbitrary types for atomic_cas() while using the LDREX primitives. It
- * may still be possible to provide atomicity by blocking interrupts.
+ * level primitives for exclusive access, synchronization is supported by
+ * blocking interrupts--as in the default template below.
  */
 template <>
 bool mbed::util::atomic_cas<uint8_t>(uint8_t *ptr, uint8_t *expectedCurrentValue, uint8_t desiredValue)
@@ -119,7 +118,10 @@ bool mbed::util::atomic_cas<uint32_t>(uint32_t *ptr, uint32_t *expectedCurrentVa
 
     return !__STREXW(desiredValue, ptr);
 }
-#elif (__CORTEX_M == 0x00)
+#endif /* #if (__CORTEX_M >= 0x03) */
+
+/* The default template implementation for architectures not offering load-store-
+ * exclusive instructions, or for target types not covered by such primitives.*/
 template<typename T>
 bool atomic_cas(T *ptr, T *expectedCurrentValue, T desiredValue)
 {
@@ -142,7 +144,6 @@ bool atomic_cas(T *ptr, T *expectedCurrentValue, T desiredValue)
 
     return rc;
 }
-#endif /* #if (__CORTEX_M == 0x00) */
 
 /**
  * Atomic increment.
