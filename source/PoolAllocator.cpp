@@ -22,7 +22,7 @@ void* PoolAllocator::alloc() {
     uint32_t prev_free = (uint32_t)_free_block;
     while (true) {
         void **const new_free = (void **)(*((void **)prev_free));
-        if (atomic_cas((uint32_t*)&_free_block, prev_free, (uint32_t)new_free)) {
+        if (atomic_cas((uint32_t*)&_free_block, &prev_free, (uint32_t)new_free)) {
             return (void*)new_free;
         }
     }
@@ -33,7 +33,7 @@ void PoolAllocator::free(void* p) {
         uint32_t prev_free = (uint32_t)_free_block;
         while (true) {
             *((void**)p) = (void*)prev_free;
-            if (atomic_cas((uint32_t*)&_free_block, prev_free, (uint32_t)p)) {
+            if (atomic_cas((uint32_t*)&_free_block, &prev_free, (uint32_t)p)) {
                 break;
             }
         }

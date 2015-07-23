@@ -22,13 +22,14 @@ namespace util {
  * you to the article on compare-and swap].
  *
  * @param  ptr                  The target memory location.
- * @param[in,out] expectedCurrentValue The expected current value of the data at the location.
+ * @param[in,out] expectedCurrentValue A pointer to some location holding the
+ *                              expected current value of the data being set atomically.
  *                              The computed 'desiredValue' should be a function of this current value.
  *                              @Note: This is an in-out parameter. In the
  *                              failure case of atomic_cas (where the
- *                              destination isn't set), expectedCurrentValue is
+ *                              destination isn't set), the pointee of expectedCurrentValue is
  *                              updated with the current value.
- * @param[in] desiredValue      The new value computed based on 'expectedCurrentValue'.
+ * @param[in] desiredValue      The new value computed based on '*expectedCurrentValue'.
  *
  * @return                      true if the memory location was atomically
  *                              updated with the desired value (after verifying
@@ -38,29 +39,31 @@ namespace util {
  *                              value of the target memory location.
  *
  * pseudocode:
- * function cas(p : pointer to int, old : int, new : int) returns bool {
- *     if *p != old {
- *         old = *p
+ * function cas(p : pointer to int, old : pointer to int, new : int) returns bool {
+ *     if *p != *old {
+ *         *old = *p
  *         return false
  *     }
  *     *p = new
  *     return true
  * }
  *
- * @Note: In the failure case (where the destination isn't set),
- * expectedCurrentValue is still updated with the current value. This property
- * helps writing concise code for the following incr:
+ * @Note: In the failure case (where the destination isn't set), the value
+ * pointed to by expectedCurrentValue is still updated with the current value.
+ * This property helps writing concise code for the following incr:
  *
  * function incr(p : pointer to int, a : int) returns int {
  *     done = false
- *     value = *p  // This fetch operation need not be atomic.
+ *     *value = *p // This fetch operation need not be atomic.
  *     while not done {
- *         done = atomic_cas(p, value, value + a) // value gets updated automatically until success
+ *         done = atomic_cas(p, &value, value + a) // value gets updated automatically until success
  *     }
  *     return value + a
  * }
  *
- * For Cortex-M3 and above, we use the load/store-exclusive instructions to
+ * atomic_cas() is implemented using a template.
+ *
+ * For ARMv7-M and above, we use the load/store-exclusive instructions to
  * implement atomic_cas, so we provide three template specializations corresponding
  * to the byte, half-word, and word variants of the instructions; for Cortex-M0,
  * synchronization requires blocking interrupts, and we have the liberty of
@@ -68,7 +71,7 @@ namespace util {
  */
 #if (__CORTEX_M >= 0x03)
 template<typename T>
-bool atomic_cas(T *ptr, T &expectedCurrentValue, T desiredValue);
+bool atomic_cas(T *ptr, T *expectedCurrentValue, T desiredValue);
 
 /* The following provide specializations for the above template--corresponding
  * to instructions available on the underlying architecture.
@@ -79,11 +82,11 @@ bool atomic_cas(T *ptr, T &expectedCurrentValue, T desiredValue);
  * may still be possible to provide atomicity by blocking interrupts.
  */
 template <>
-bool mbed::util::atomic_cas<uint8_t>(uint8_t *ptr, uint8_t &expectedCurrentValue, uint8_t desiredValue)
+bool mbed::util::atomic_cas<uint8_t>(uint8_t *ptr, uint8_t *expectedCurrentValue, uint8_t desiredValue)
 {
     uint8_t currentValue = __LDREXB(ptr);
-    if (currentValue != expectedCurrentValue) {
-        expectedCurrentValue = currentValue;
+    if (currentValue != *expectedCurrentValue) {
+        *expectedCurrentValue = currentValue;
         __CLREX();
         return false;
     }
@@ -92,11 +95,11 @@ bool mbed::util::atomic_cas<uint8_t>(uint8_t *ptr, uint8_t &expectedCurrentValue
 }
 
 template<>
-bool mbed::util::atomic_cas<uint16_t>(uint16_t *ptr, uint16_t &expectedCurrentValue, uint16_t desiredValue)
+bool mbed::util::atomic_cas<uint16_t>(uint16_t *ptr, uint16_t *expectedCurrentValue, uint16_t desiredValue)
 {
     uint16_t currentValue = __LDREXH(ptr);
-    if (currentValue != expectedCurrentValue) {
-        expectedCurrentValue = currentValue;
+    if (currentValue != *expectedCurrentValue) {
+        *expectedCurrentValue = currentValue;
         __CLREX();
         return false;
     }
@@ -105,11 +108,11 @@ bool mbed::util::atomic_cas<uint16_t>(uint16_t *ptr, uint16_t &expectedCurrentVa
 }
 
 template<>
-bool mbed::util::atomic_cas<uint32_t>(uint32_t *ptr, uint32_t &expectedCurrentValue, uint32_t desiredValue)
+bool mbed::util::atomic_cas<uint32_t>(uint32_t *ptr, uint32_t *expectedCurrentValue, uint32_t desiredValue)
 {
     uint32_t currentValue = __LDREXW(ptr);
-    if (currentValue != expectedCurrentValue) {
-        expectedCurrentValue = currentValue;
+    if (currentValue != *expectedCurrentValue) {
+        *expectedCurrentValue = currentValue;
         __CLREX();
         return false;
     }
@@ -118,7 +121,7 @@ bool mbed::util::atomic_cas<uint32_t>(uint32_t *ptr, uint32_t &expectedCurrentVa
 }
 #elif (__CORTEX_M == 0x00)
 template<typename T>
-bool atomic_cas(T *ptr, T &expectedCurrentValue, T desiredValue)
+bool atomic_cas(T *ptr, T *expectedCurrentValue, T desiredValue)
 {
     bool rc = true;
 
@@ -126,10 +129,10 @@ bool atomic_cas(T *ptr, T &expectedCurrentValue, T desiredValue)
     __disable_irq();
 
     T currentValue = *ptr;
-    if (currentValue == expectedCurrentValue) {
+    if (currentValue == *expectedCurrentValue) {
         *ptr = desiredValue;
     } else {
-        expectedCurrentValue = currentValue;
+        *expectedCurrentValue = currentValue;
         rc = false;
     }
 
@@ -152,7 +155,7 @@ template<typename T> T atomic_incr(T *valuePtr, T delta)
     T oldValue = *valuePtr;
     while (true) {
         const T newValue = oldValue + delta;
-        if (atomic_cas(valuePtr, oldValue, newValue)) {
+        if (atomic_cas(valuePtr, &oldValue, newValue)) {
             return newValue;
         }
     }
@@ -169,7 +172,7 @@ template<typename T> T atomic_decr(T *valuePtr, T delta)
     T oldValue = *valuePtr;
     while (true) {
         const T newValue = oldValue - delta;
-        if (atomic_cas(valuePtr, oldValue, newValue)) {
+        if (atomic_cas(valuePtr, &oldValue, newValue)) {
             return newValue;
         }
     }
