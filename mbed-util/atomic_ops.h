@@ -61,15 +61,61 @@ namespace util {
  * }
  *
  * For Cortex-M3 and above, we use the load/store-exclusive instructions to
- * implement atomic_cas, so we provide three overloaded versions corresponding
+ * implement atomic_cas, so we provide three template specializations corresponding
  * to the byte, half-word, and word variants of the instructions; for Cortex-M0,
  * synchronization requires blocking interrupts, and we have the liberty of
  * creating a generic templatized variant of atomic_cas.
  */
 #if (__CORTEX_M >= 0x03)
-bool atomic_cas(uint8_t  *ptr, uint8_t  &expectedCurrentValue, uint8_t  desiredValue);
-bool atomic_cas(uint16_t *ptr, uint16_t &expectedCurrentValue, uint16_t desiredValue);
-bool atomic_cas(uint32_t *ptr, uint32_t &expectedCurrentValue, uint32_t desiredValue);
+template<typename T>
+bool atomic_cas(T *ptr, T &expectedCurrentValue, T desiredValue);
+
+/* The following provide specializations for the above template--corresponding
+ * to instructions available on the underlying architecture.
+ *
+ * If you're using atomic_cas() on a type which isn't covered by one of the low-
+ * level primitives, then you might want to do something else. We don't want to
+ * permit arbitrary types for atomic_cas() while using the LDREX primitives. It
+ * may still be possible to provide atomicity by blocking interrupts.
+ */
+template <>
+bool mbed::util::atomic_cas<uint8_t>(uint8_t *ptr, uint8_t &expectedCurrentValue, uint8_t desiredValue)
+{
+    uint8_t currentValue = __LDREXB(ptr);
+    if (currentValue != expectedCurrentValue) {
+        expectedCurrentValue = currentValue;
+        __CLREX();
+        return false;
+    }
+
+    return !__STREXB(desiredValue, ptr);
+}
+
+template<>
+bool mbed::util::atomic_cas<uint16_t>(uint16_t *ptr, uint16_t &expectedCurrentValue, uint16_t desiredValue)
+{
+    uint16_t currentValue = __LDREXH(ptr);
+    if (currentValue != expectedCurrentValue) {
+        expectedCurrentValue = currentValue;
+        __CLREX();
+        return false;
+    }
+
+    return !__STREXH(desiredValue, ptr);
+}
+
+template<>
+bool mbed::util::atomic_cas<uint32_t>(uint32_t *ptr, uint32_t &expectedCurrentValue, uint32_t desiredValue)
+{
+    uint32_t currentValue = __LDREXW(ptr);
+    if (currentValue != expectedCurrentValue) {
+        expectedCurrentValue = currentValue;
+        __CLREX();
+        return false;
+    }
+
+    return !__STREXW(desiredValue, ptr);
+}
 #elif (__CORTEX_M == 0x00)
 template<typename T>
 bool atomic_cas(T *ptr, T &expectedCurrentValue, T desiredValue)
