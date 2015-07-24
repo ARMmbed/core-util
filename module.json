@@ -20,7 +20,7 @@
     "mbed": {
       "cmsis-core": "~0.2.2",
       "mbed-alloc": "~0.0.4",
-      "mbed-core": "~0.2.4"
+      "mbed-core": "*"
     }
   },
   "scripts": {
