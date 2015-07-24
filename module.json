@@ -1,6 +1,6 @@
 {
   "name": "mbed-util",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "description": "mbed utilities library",
   "keywords": [],
   "private": true,
