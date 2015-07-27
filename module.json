@@ -1,6 +1,6 @@
 {
   "name": "mbed-util",
-  "version": "0.0.8",
+  "version": "0.0.10",
   "description": "mbed utilities library",
   "keywords": [],
   "private": true,
@@ -20,7 +20,7 @@
     "mbed": {
       "cmsis-core": "~0.2.2",
       "mbed-alloc": "~0.0.4",
-      "mbed-core": "~0.2.4"
+      "mbed-core": "*"
     }
   },
   "scripts": {

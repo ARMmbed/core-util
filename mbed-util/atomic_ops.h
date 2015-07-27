@@ -60,60 +60,13 @@ namespace util {
  *     }
  *     return value + a
  * }
+ *
+ * The following is the generic implementation. It can be specialized using
+ * load-store-exclusive primitives for architectures offering appropriate
+ * instructions. The generic implementation applies for architectures lacking
+ * load-store-exclusive primitives, or when matching against target types larger
+ * than the word-size.
  */
-template<typename T>
-bool atomic_cas(T *ptr, T *expectedCurrentValue, T desiredValue);
-
-/* For ARMv7-M and above, we use the load/store-exclusive instructions to
- * implement atomic_cas, so we provide three template specializations
- * corresponding to the byte, half-word, and word variants of the instructions;
- * for architectures which don't offer load-store-exclusive primitives, or in
- * case of target data-types larger than a word, we offer a generic templatized
- * variant which blocks interrupts.
- */
-#if (__CORTEX_M >= 0x03)
-template <>
-bool mbed::util::atomic_cas<uint8_t>(uint8_t *ptr, uint8_t *expectedCurrentValue, uint8_t desiredValue)
-{
-    uint8_t currentValue = __LDREXB(ptr);
-    if (currentValue != *expectedCurrentValue) {
-        *expectedCurrentValue = currentValue;
-        __CLREX();
-        return false;
-    }
-
-    return !__STREXB(desiredValue, ptr);
-}
-
-template<>
-bool mbed::util::atomic_cas<uint16_t>(uint16_t *ptr, uint16_t *expectedCurrentValue, uint16_t desiredValue)
-{
-    uint16_t currentValue = __LDREXH(ptr);
-    if (currentValue != *expectedCurrentValue) {
-        *expectedCurrentValue = currentValue;
-        __CLREX();
-        return false;
-    }
-
-    return !__STREXH(desiredValue, ptr);
-}
-
-template<>
-bool mbed::util::atomic_cas<uint32_t>(uint32_t *ptr, uint32_t *expectedCurrentValue, uint32_t desiredValue)
-{
-    uint32_t currentValue = __LDREXW(ptr);
-    if (currentValue != *expectedCurrentValue) {
-        *expectedCurrentValue = currentValue;
-        __CLREX();
-        return false;
-    }
-
-    return !__STREXW(desiredValue, ptr);
-}
-#endif /* #if (__CORTEX_M >= 0x03) */
-
-/* The default template implementation for architectures not offering load-store-
- * exclusive instructions, or for target types not covered by such primitives. */
 template<typename T>
 bool atomic_cas(T *ptr, T *expectedCurrentValue, T desiredValue)
 {
