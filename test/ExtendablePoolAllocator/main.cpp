@@ -8,21 +8,13 @@
 
 using namespace mbed::util;
 
-#define MBED_HOSTTEST_ASSERT(cond)   \
-do {                                 \
-    if (!(cond)) {                   \
-        fprintf(stderr, "FAILED: '%s' in %s, line %d\r\n", #cond, __FILE__, __LINE__); \
-        MBED_HOSTTEST_RESULT(false); \
-    }                                \
-} while(false)
-
 static bool check_value_and_alignment(void *p, unsigned alignment = MBED_UTIL_POOL_ALLOC_DEFAULT_ALIGN) {
     if (NULL == p)
         return false;
     return ((uint32_t)p & (alignment - 1)) == 0;
 }
 
-int main() {
+void app_start(int, char**) {
     MBED_HOSTTEST_TIMEOUT(5);
     MBED_HOSTTEST_SELECT(default);
     MBED_HOSTTEST_DESCRIPTION(mbed-util extendable pool allocator test);
@@ -59,6 +51,5 @@ int main() {
     MBED_HOSTTEST_ASSERT(allocator.get_num_pools() == 2);
 
     MBED_HOSTTEST_RESULT(true);
-    return 0;
 }
 
