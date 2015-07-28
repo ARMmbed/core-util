@@ -7,14 +7,6 @@
 
 using namespace mbed::util;
 
-#define MBED_HOSTTEST_ASSERT(cond)   \
-do {                                 \
-    if (!(cond)) {                   \
-        fprintf(stderr, "FAILED: '%s' in %s, line %d\r\n", #cond, __FILE__, __LINE__); \
-        MBED_HOSTTEST_RESULT(false); \
-    }                                \
-} while(false)
-
 void app_start(int, char**) {
     MBED_HOSTTEST_TIMEOUT(5);
     MBED_HOSTTEST_SELECT(default);

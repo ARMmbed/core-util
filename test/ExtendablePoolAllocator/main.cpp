@@ -8,14 +8,6 @@
 
 using namespace mbed::util;
 
-#define MBED_HOSTTEST_ASSERT(cond)   \
-do {                                 \
-    if (!(cond)) {                   \
-        fprintf(stderr, "FAILED: '%s' in %s, line %d\r\n", #cond, __FILE__, __LINE__); \
-        MBED_HOSTTEST_RESULT(false); \
-    }                                \
-} while(false)
-
 static bool check_value_and_alignment(void *p, unsigned alignment = MBED_UTIL_POOL_ALLOC_DEFAULT_ALIGN) {
     if (NULL == p)
         return false;
