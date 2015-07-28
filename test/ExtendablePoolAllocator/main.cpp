@@ -22,7 +22,7 @@ static bool check_value_and_alignment(void *p, unsigned alignment = MBED_UTIL_PO
     return ((uint32_t)p & (alignment - 1)) == 0;
 }
 
-int main() {
+void app_start(int, char**) {
     MBED_HOSTTEST_TIMEOUT(5);
     MBED_HOSTTEST_SELECT(default);
     MBED_HOSTTEST_DESCRIPTION(mbed-util extendable pool allocator test);
@@ -59,6 +59,5 @@ int main() {
     MBED_HOSTTEST_ASSERT(allocator.get_num_pools() == 2);
 
     MBED_HOSTTEST_RESULT(true);
-    return 0;
 }
 

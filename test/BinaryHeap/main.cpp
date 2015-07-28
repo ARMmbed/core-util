@@ -139,7 +139,7 @@ static void test_max_heap_non_pod() {
     printf("********** Ending test_max_heap_non_pod()\r\n");
 }
 
-int main() {
+void app_start(int, char **) {
     MBED_HOSTTEST_TIMEOUT(5);
     MBED_HOSTTEST_SELECT(default);
     MBED_HOSTTEST_DESCRIPTION(mbed-util binary heap test);
@@ -152,6 +152,5 @@ int main() {
     test_max_heap_non_pod();
     MBED_HOSTTEST_ASSERT(Test::inst_count == 0);
     MBED_HOSTTEST_RESULT(true);
-    return 0;
 }
 

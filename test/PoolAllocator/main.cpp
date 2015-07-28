@@ -15,7 +15,7 @@ do {                                 \
     }                                \
 } while(false)
 
-int main() {
+void app_start(int, char**) {
     MBED_HOSTTEST_TIMEOUT(5);
     MBED_HOSTTEST_SELECT(default);
     MBED_HOSTTEST_DESCRIPTION(mbed-util pool allocator test);
@@ -62,6 +62,5 @@ int main() {
     MBED_HOSTTEST_ASSERT(p == NULL);
 
     MBED_HOSTTEST_RESULT(true);
-    return 0;
 }
 
