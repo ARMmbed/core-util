@@ -22,8 +22,13 @@
 #include "mbed-util/critical.h"
 
 static volatile uint32_t interruptEnableCounter = 0;
+static volatile uint32_t critical_primask = 0;
 void critical_section_enter()
 {
+    /* sample the primask */
+    if (!interruptEnableCounter) {
+        critical_primask = __get_PRIMASK();
+    }
     __disable_irq();
     /* not allowed to overflow the interruptEnableCounter. */
     if (interruptEnableCounter == UINT32_MAX) {
@@ -36,5 +41,5 @@ void critical_section_enter()
 void critical_section_exit()
 {
     if (interruptEnableCounter) interruptEnableCounter--;
-    if (!interruptEnableCounter) __enable_irq();
+    if (!interruptEnableCounter && !critical_primask) __enable_irq();
 }
