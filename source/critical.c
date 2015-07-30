@@ -23,6 +23,7 @@
 
 static volatile uint32_t interruptEnableCounter = 0;
 static volatile uint32_t critical_primask = 0;
+const uint32_t invalid = 0xFFFFFFFEUL;
 void critical_section_enter()
 {
     /* sample the primask */
@@ -33,7 +34,7 @@ void critical_section_enter()
     /* not allowed to overflow the interruptEnableCounter. */
     if (interruptEnableCounter == UINT32_MAX) {
         /* Generate a fault */
-        *((uint32_t *)NULL) = 0;
+        ((void(*)(void))&invalid)();
     }
     interruptEnableCounter++;
 }
