@@ -5,6 +5,9 @@
 
 #include <stdint.h>
 #include "cmsis-core/core_generic.h"
+#ifdef TARGET_NORDIC
+#include "nrf_soc.h"
+#endif
 
 namespace mbed {
 namespace util {
@@ -26,16 +29,28 @@ namespace util {
 class CriticalSectionLock {
 public:
     CriticalSectionLock() {
+#ifdef TARGET_NORDIC
+        sd_nvic_critical_region_enter(&_state);
+#else
         _state = __get_PRIMASK();
         __disable_irq();
+#endif
     }
 
     ~CriticalSectionLock() {
+#ifdef TARGET_NORDIC
+        sd_nvic_critical_region_exit(_state);
+#else
         __set_PRIMASK(_state);
+#endif
     }
 
-private:
+public:
+#ifdef TARGET_NORDIC
+    uint8_t  _state;
+#else
     uint32_t _state;
+#endif
 };
 
 } // namespace util
