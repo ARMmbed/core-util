@@ -1,6 +1,6 @@
 {
   "name": "core-util",
-  "version": "0.0.11",
+  "version": "0.0.12",
   "description": "mbed utilities library",
   "keywords": [],
   "private": true,
