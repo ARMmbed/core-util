@@ -1,5 +1,5 @@
 {
-  "name": "mbed-util",
+  "name": "core-util",
   "version": "0.0.11",
   "description": "mbed utilities library",
   "keywords": [],
@@ -19,8 +19,8 @@
   "targetDependencies": {
     "mbed": {
       "cmsis-core": "~0.2.2",
-      "mbed-alloc": "~0.0.4",
-      "mbed-core": "*"
+      "ualloc": "~0.0.4",
+      "mbed-drivers": "*"
     }
   },
   "scripts": {
