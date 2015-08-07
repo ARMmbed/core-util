@@ -45,7 +45,7 @@ public:
 #endif
     }
 
-public:
+private:
 #ifdef TARGET_NORDIC
     uint8_t  _state;
 #else
