@@ -4,6 +4,12 @@
   "description": "mbed utilities library",
   "keywords": [],
   "private": true,
+  "licenses": [
+    {
+      "url": "https://spdx.org/licenses/Apache-2.0",
+      "type": "Apache-2.0"
+    }
+  ],
   "author": "Bogdan Marinescu <bogdan.marinescu@arm.com>",
   "repository": {
     "url": "git@github.com:ARMmbed/mbed-util.git",
