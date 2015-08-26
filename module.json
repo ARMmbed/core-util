@@ -1,6 +1,6 @@
 {
   "name": "core-util",
-  "version": "0.0.13",
+  "version": "0.0.14",
   "description": "mbed utilities library",
   "keywords": [],
   "private": true,
@@ -16,12 +16,6 @@
     "type": "git"
   },
   "homepage": "https://github.com/ARMmbed/mbed-util",
-  "licenses": [
-    {
-      "url": "https://spdx.org/licenses/Apache-2.0",
-      "type": "Apache-2.0"
-    }
-  ],
   "targetDependencies": {
     "mbed": {
       "cmsis-core": "~0.2.2",
