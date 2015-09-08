@@ -25,6 +25,8 @@
 #include "FunctionPointerBind.h"
 
 namespace mbed {
+namespace util {
+
 /** A class for storing and calling a pointer to a static or member void function without arguments
  */
 template <typename R>
@@ -599,6 +601,7 @@ const struct FunctionPointerBase<R>::ArgOps FunctionPointer4<R,A1,A2,A3,A4>::_fp
 typedef FunctionPointer0<void> FunctionPointer;
 //typedef FunctionPointer1<void, int> event_callback_t;
 
+} // namespace util
 } // namespace mbed
 
 #endif

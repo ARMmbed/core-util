@@ -20,7 +20,9 @@
 #include <stdint.h>
 #include <stddef.h>
 #include <stdarg.h>
+
 namespace mbed {
+namespace util {
 
 template<typename R>
 class FunctionPointerBase {
@@ -85,5 +87,6 @@ const struct FunctionPointerBase<R>::ArgOps FunctionPointerBase<R>::_nullops = {
     FunctionPointerBase<R>::_null_destructor
 };
 
-}
+} /* namespace util */
+} /* namespace mbed */
 #endif

@@ -33,7 +33,8 @@
         case 0:case (MBED_STATIC_ASSERT_FAILED): \
         break;}
 
-namespace mbed{
+namespace mbed {
+namespace util {
 
 template<typename R>
 class FunctionPointerBind : public FunctionPointerBase<R> {
@@ -107,6 +108,8 @@ protected:
     const struct FunctionPointerBase<R>::ArgOps * _ops;
     uint32_t _storage[(EVENT_STORAGE_SIZE+sizeof(uint32_t)-1)/sizeof(uint32_t)];
 };
-}
+
+} /* namespace util */
+} /* namespace mbed */
 
 #endif // MBED_FUNCTIONPOINTERBIND_H__

@@ -19,7 +19,9 @@
 
 #include "FunctionPointerBind.h"
 namespace mbed {
+namespace util {
     typedef FunctionPointerBind<void> Event;
-}
+} /* namespace util */
+} /* namespace mbed */
 
 #endif // MBED_EVENT_H_
