@@ -17,6 +17,8 @@
 #ifndef __MBED_ALLOC_H
 #define __MBED_ALLOC_H
 
+#include <stddef.h>
+
 #if defined(__ARMCC_VERSION)
 #   include <rt_sys.h>
 #   define PREFIX(x)    _sys##x
