@@ -15,10 +15,12 @@
     "type": "git"
   },
   "homepage": "https://github.com/ARMmbed/mbed-util",
+  "dependencies": {
+      "ualloc": "~0.0.4"
+  },
   "targetDependencies": {
     "mbed": {
       "cmsis-core": "~0.2.2",
-      "ualloc": "~0.0.4",
       "mbed-drivers": "*"
     }
   },
