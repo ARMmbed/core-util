@@ -19,7 +19,7 @@
 #define __MBED_UTIL_ATOMIC_OPS_H__
 
 #include <stdint.h>
-#include "cmsis-core/core_generic.h"
+#include "CriticalSectionLock.h"
 
 namespace mbed {
 namespace util {
@@ -86,8 +86,7 @@ bool atomic_cas(T *ptr, T *expectedCurrentValue, T desiredValue)
 {
     bool rc = true;
 
-    uint32_t previousPRIMASK = __get_PRIMASK();
-    __disable_irq();
+    CriticalSectionLock lock;
 
     T currentValue = *ptr;
     if (currentValue == *expectedCurrentValue) {
@@ -95,10 +94,6 @@ bool atomic_cas(T *ptr, T *expectedCurrentValue, T desiredValue)
     } else {
         *expectedCurrentValue = currentValue;
         rc = false;
-    }
-
-    if (!previousPRIMASK) {
-        __enable_irq();
     }
 
     return rc;

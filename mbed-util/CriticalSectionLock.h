@@ -19,10 +19,10 @@
 #define __MBED_UTIL_CRITICAL_SECTION_LOCK_H__
 
 #include <stdint.h>
-#include "cmsis-core/core_generic.h"
+#include "minar-platform/minar_platform.h"
 #ifdef TARGET_NORDIC
 #include "nrf_soc.h"
-#endif
+#endif /* #ifdef TARGET_NORDIC */
 
 namespace mbed {
 namespace util {
@@ -47,8 +47,7 @@ public:
 #ifdef TARGET_NORDIC
         sd_nvic_critical_region_enter(&_state);
 #else
-        _state = __get_PRIMASK();
-        __disable_irq();
+        _state = minar::platform::pushDisableIRQState();
 #endif
     }
 
@@ -56,7 +55,7 @@ public:
 #ifdef TARGET_NORDIC
         sd_nvic_critical_region_exit(_state);
 #else
-        __set_PRIMASK(_state);
+        minar::platform::popDisableIRQState(_state);
 #endif
     }
 
@@ -64,7 +63,7 @@ private:
 #ifdef TARGET_NORDIC
     uint8_t  _state;
 #else
-    uint32_t _state;
+    minar::platform::irqstate_t _state;
 #endif
 };
 
