@@ -16,7 +16,6 @@
  */
 
 #include "mbed-util/PoolAllocator.h"
-#include "cmsis-core/core_generic.h"
 #include <stddef.h>
 #include <stdint.h>
 #include <stdio.h>
