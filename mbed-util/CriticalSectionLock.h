@@ -19,10 +19,16 @@
 #define __MBED_UTIL_CRITICAL_SECTION_LOCK_H__
 
 #include <stdint.h>
-#include "minar-platform/minar_platform.h"
+#ifndef TARGET_LIKE_POSIX
+#include "cmsis-core/core_generic.h"
 #ifdef TARGET_NORDIC
 #include "nrf_soc.h"
 #endif /* #ifdef TARGET_NORDIC */
+#else  /* #ifdef TARGET_LIKE_POSIX */
+#include <assert.h>
+#include <unistd.h>
+#include <signal.h>
+#endif /* #ifdef TARGET_LIKE_POSIX */
 
 namespace mbed {
 namespace util {
@@ -46,24 +52,45 @@ public:
     CriticalSectionLock() {
 #ifdef TARGET_NORDIC
         sd_nvic_critical_region_enter(&_state);
+#elif defined(TARGET_LIKE_POSIX)
+        if (++IRQNestingDepth > 1) {
+            return;
+        }
+
+        int rc;
+        sigset_t fullSet;
+        rc = sigfillset(&fullSet);
+        assert(rc == 0);
+        rc = sigprocmask(SIG_BLOCK, &fullSet, &oldSigSet);
+        assert(rc == 0);
 #else
-        _state = minar::platform::pushDisableIRQState();
+        _state = __get_PRIMASK();
+        __disable_irq();
 #endif
     }
 
     ~CriticalSectionLock() {
 #ifdef TARGET_NORDIC
         sd_nvic_critical_region_exit(_state);
+#elif defined(TARGET_LIKE_POSIX)
+        assert(IRQNestingDepth > 0);
+        if (--IRQNestingDepth == 0) {
+            int rc = sigprocmask(SIG_SETMASK, &oldSigSet, NULL);
+            assert(rc == 0);
+        }
 #else
-        minar::platform::popDisableIRQState(_state);
+        __set_PRIMASK(_state);
 #endif
     }
 
 private:
 #ifdef TARGET_NORDIC
     uint8_t  _state;
+#elif defined(TARGET_LIKE_POSIX)
+    unsigned IRQNestingDepth;
+    sigset_t oldSigSet;
 #else
-    minar::platform::irqstate_t _state;
+    uint32_t _state;
 #endif
 };
 
