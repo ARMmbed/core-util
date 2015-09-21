@@ -45,7 +45,7 @@ public:
                to satisfy the 'alignment' argument)
       * @param alignment allocation alignment in bytes (must be a power of 2, at least 4)
       */
-    PoolAllocator(void *start, size_t elements, size_t element_size, size_t alignment = MBED_UTIL_POOL_ALLOC_DEFAULT_ALIGN);
+    PoolAllocator(void *start, size_t elements, size_t element_size, unsigned alignment = MBED_UTIL_POOL_ALLOC_DEFAULT_ALIGN);
 
     /** Allocate a new element from the pool
      * @returns the address of the new element or NULL for error
