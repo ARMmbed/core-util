@@ -11,10 +11,10 @@
   ],
   "author": "Bogdan Marinescu <bogdan.marinescu@arm.com>",
   "repository": {
-    "url": "git@github.com:ARMmbed/mbed-util.git",
+    "url": "git@github.com:ARMmbed/core-util.git",
     "type": "git"
   },
-  "homepage": "https://github.com/ARMmbed/mbed-util",
+  "homepage": "https://github.com/ARMmbed/core-util",
   "dependencies": {
     "ualloc": "*"
   },
