@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-#include "mbed-util/atomic_ops.h"
+#include "core-util/atomic_ops.h"
 
 namespace mbed {
 namespace util {

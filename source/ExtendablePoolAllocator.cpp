@@ -15,9 +15,9 @@
  * limitations under the License.
  */
 
-#include "mbed-util/ExtendablePoolAllocator.h"
-#include "mbed-util/PoolAllocator.h"
-#include "mbed-util/CriticalSectionLock.h"
+#include "core-util/ExtendablePoolAllocator.h"
+#include "core-util/PoolAllocator.h"
+#include "core-util/CriticalSectionLock.h"
 #include "mbed-alloc/ualloc.h"
 #include <stddef.h>
 #include <stdint.h>

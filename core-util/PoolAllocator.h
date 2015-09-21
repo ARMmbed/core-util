@@ -21,7 +21,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
-// [TODO] this should probably be 8, but at the moment our allocators are 
+// [TODO] this should probably be 8, but at the moment our allocators are
 // aligned at 4 bytes
 // [TODO] where should the system allocator alignment be defined?
 #define MBED_UTIL_POOL_ALLOC_DEFAULT_ALIGN       4
@@ -49,8 +49,8 @@ public:
 
     /** Allocate a new element from the pool
      * @returns the address of the new element or NULL for error
-      */
-    void* alloc();
+     */
+    void *alloc();
 
     /** Allocate a new element from the pool and initialize it with 0
       * @returns the address of the new element or NULL for error

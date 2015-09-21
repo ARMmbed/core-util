@@ -20,8 +20,8 @@
 
 #include <stddef.h>
 #include <stdint.h>
-#include "mbed-util/CriticalSectionLock.h"
-#include "mbed-util/Array.h"
+#include "core-util/CriticalSectionLock.h"
+#include "core-util/Array.h"
 #include "mbed-alloc/ualloc.h"
 #include <stdio.h>
 
@@ -38,7 +38,7 @@
   * Usage example:
   *
   * @code
-  * #include "mbed-util/BinaryHeap.h"
+  * #include "core-util/BinaryHeap.h"
   *
   * class A {
   * public:
@@ -127,7 +127,7 @@ public:
       */
     T get_root() const {
         if (_elements == 0) {
-            MBED_UTIL_RUNTIME_ERROR("get_root() called on an empty BinaryHeap");
+            CORE_UTIL_RUNTIME_ERROR("get_root() called on an empty BinaryHeap");
         }
         return _array[0];
     }
@@ -137,7 +137,7 @@ public:
       */
     T pop_root() {
          if (_elements == 0) {
-            MBED_UTIL_RUNTIME_ERROR("get_root() called on an empty BinaryHeap");
+            CORE_UTIL_RUNTIME_ERROR("get_root() called on an empty BinaryHeap");
         }
         CriticalSectionLock lock;
         T temp = _array[0];
@@ -245,7 +245,7 @@ private:
         // When that happens, it is replaced with the node at the last position in the heap
         // Since that might make the heap inconsistent, we need to move the node down if its
         // value does not respect the comparison function when compared with its left and
-        // right children. 
+        // right children.
         while (true) {
             size_t left = _left(node), right = _right(node), temp;
             bool change_left = (left < _elements) && !_comparator(_array[node], _array[left]);

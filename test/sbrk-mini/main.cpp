@@ -18,7 +18,7 @@
 #include <stddef.h>
 #include <stdint.h>
 #include "mbed/test_env.h"
-#include "mbed-util/sbrk.h"
+#include "core-util/sbrk.h"
 
 extern void * volatile mbed_sbrk_ptr;
 extern volatile uintptr_t mbed_sbrk_diff;

@@ -19,7 +19,7 @@
 #define __MBED_UTIL_EXTENDABLE_POOL_ALLOCATOR_H__
 
 #include <stddef.h>
-#include "mbed-util/PoolAllocator.h"
+#include "core-util/PoolAllocator.h"
 #include "mbed-alloc/ualloc.h"
 
 namespace mbed {

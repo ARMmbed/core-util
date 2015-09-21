@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-#include "mbed-util/PoolAllocator.h"
+#include "core-util/PoolAllocator.h"
 #include <stddef.h>
 #include <stdint.h>
 #include <stdio.h>
 
-#include "mbed-util/atomic_ops.h"
+#include "core-util/atomic_ops.h"
 
 namespace mbed {
 namespace util {

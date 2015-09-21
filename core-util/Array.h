@@ -20,9 +20,9 @@
 
 #include <stddef.h>
 #include <stdint.h>
-#include "mbed-util/CriticalSectionLock.h"
-#include "mbed-util/PoolAllocator.h"
-#include "mbed-util/mbed-util.h"
+#include "core-util/CriticalSectionLock.h"
+#include "core-util/PoolAllocator.h"
+#include "core-util/core-util.h"
 #include "mbed-alloc/ualloc.h"
 
 namespace mbed {
@@ -135,7 +135,7 @@ public:
             }
             {
                 CriticalSectionLock lock;
-                if (prev_capacity == _capacity) { // allocate only if someone else didn't 
+                if (prev_capacity == _capacity) { // allocate only if someone else didn't
                     if((_head = create_new_array(_grow_capacity, _elements, _head)) == NULL) {
                         return false;
                     }
@@ -225,21 +225,21 @@ private:
     T *get_element_address(unsigned idx) const {
         array_link *crt = _head;
 
-        MBED_UTIL_ASSERT(idx < _elements);
+        CORE_UTIL_ASSERT(idx < _elements);
         // first_idx in the first allocated array is 0, so the loop below is guaranteed to end
         while(idx < crt->first_idx) {
             crt = crt->prev;
         }
-        MBED_UTIL_ASSERT(crt != NULL);
+        CORE_UTIL_ASSERT(crt != NULL);
         return (T*)(crt->data + _element_size * (idx - crt->first_idx));
     }
 
     void check_access(unsigned idx) const {
         if (NULL == _head) {
-            MBED_UTIL_RUNTIME_ERROR("Attempt to use uninitialized Array %p\r\n", this);
+            CORE_UTIL_RUNTIME_ERROR("Attempt to use uninitialized Array %p\r\n", this);
         }
         if (idx >= _elements) {
-            MBED_UTIL_RUNTIME_ERROR("Attempt to use invalid index %u in Array %p\r\n", idx, this);
+            CORE_UTIL_RUNTIME_ERROR("Attempt to use invalid index %u in Array %p\r\n", idx, this);
         }
     }
 

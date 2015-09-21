@@ -21,12 +21,12 @@
 #include <stdarg.h>
 #include "device.h"
 #include "mbed/mbed_interface.h"
-#include "mbed-util/mbed-util.h"
+#include "core-util/core-util.h"
 #if DEVICE_STDIO_MESSAGES
 #include <stdio.h>
 #endif
 
-void mbed_util_runtime_error_internal(const char *file, int line, const char* format, ...) {
+void core_util_runtime_error_internal(const char *file, int line, const char* format, ...) {
 #if DEVICE_STDIO_MESSAGES
     fprintf(stderr, "Runtime error in file %s, line %d: ", file, line);
     va_list arg;
@@ -37,7 +37,7 @@ void mbed_util_runtime_error_internal(const char *file, int line, const char* fo
     exit(1);
 }
 
-void mbed_util_assert_internal(const char *expr, const char *file, int line, const char* msg)
+void core_util_assert_internal(const char *expr, const char *file, int line, const char* msg)
 {
 #if DEVICE_STDIO_MESSAGES
     fprintf(stderr, "assertation failed: %s, file: %s, line %d", expr, file, line);
