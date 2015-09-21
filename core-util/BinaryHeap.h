@@ -127,7 +127,7 @@ public:
       */
     T get_root() const {
         if (_elements == 0) {
-            MBED_UTIL_RUNTIME_ERROR("get_root() called on an empty BinaryHeap");
+            CORE_UTIL_RUNTIME_ERROR("get_root() called on an empty BinaryHeap");
         }
         return _array[0];
     }
@@ -137,7 +137,7 @@ public:
       */
     T pop_root() {
          if (_elements == 0) {
-            MBED_UTIL_RUNTIME_ERROR("get_root() called on an empty BinaryHeap");
+            CORE_UTIL_RUNTIME_ERROR("get_root() called on an empty BinaryHeap");
         }
         CriticalSectionLock lock;
         T temp = _array[0];
