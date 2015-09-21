@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-#include "mbed-util/Array.h"
+#include "core-util/Array.h"
 #include "mbed/test_env.h"
 #include <stdio.h>
 #include <stdlib.h>
@@ -138,7 +138,7 @@ static void test_non_pod() {
 
     // Pop the last element from array (checks if destructor is called)
     array.pop_back();
-   
+
     MBED_HOSTTEST_ASSERT(array.get_num_elements() == initial_capacity - 1);
     MBED_HOSTTEST_ASSERT(array.get_num_zones() == 1);
 }

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-#include "mbed-util/BinaryHeap.h"
+#include "core-util/BinaryHeap.h"
 #include "mbed/test_env.h"
 #include <stdio.h>
 #include <stdlib.h>
@@ -133,7 +133,7 @@ static void test_min_heap_non_pod() {
     Test sorted_data[] = {-50, 0, 2, 7, 8, 13, 16, 20, 100, 1000};
     Test to_remove[] = {-50, 100, 8, 2};
     Test sorted_after_remove[] = {0, 7, 13, 16, 20, 1000};
- 
+
     printf("********** Starting test_min_heap_non_pod()\r\n");
     test_heap<Test, MinCompare<Test> >(data, sizeof(data)/sizeof(Test), sorted_data,
                    to_remove, sizeof(to_remove)/sizeof(Test), sorted_after_remove,
@@ -146,7 +146,7 @@ static void test_max_heap_non_pod() {
     Test sorted_data[] = {764, 753, 753, 734, 576, 364, 325, 291, 136, 63, 62, -59, -380, -382, -591, -700, -736, -927, -930, -930};
     Test to_remove[] = {-927, 576, 63, 753, -930, 364, 753}; // this will remove two elements with the same value
     Test sorted_after_remove[] = {764, 734, 325, 291, 136, 62, -59, -380, -382, -591, -700, -736, -930};
- 
+
     printf("********** Starting test_max_heap_non_pod()\r\n");
     test_heap<Test, MaxCompare<Test> >(data, sizeof(data)/sizeof(Test), sorted_data,
                    to_remove, sizeof(to_remove)/sizeof(Test), sorted_after_remove,

@@ -37,7 +37,11 @@
 #   define STDERR_FILENO    2
 
 #else
-#   include <sys/syslimits.h>
+#   ifdef TARGET_LIKE_POSIX
+#       include <stddef.h>
+#   else
+#       include <sys/syslimits.h>
+#   endif
 #   define PREFIX(x)    x
 #endif
 
@@ -71,22 +75,32 @@
 #endif
 
 #ifndef MBED_HEAP_SIZE
-extern uint32_t __heap_size;
+extern size_t __heap_size;
+#ifndef TARGET_LIKE_POSIX
 // Extract linker heap size parameter
 #define MBED_HEAP_SIZE ((ptrdiff_t) &__heap_size)
+#else
+#define MBED_HEAP_SIZE ((ptrdiff_t)  __heap_size)
+#endif
 #endif
 
 #ifdef __ARMCC_VERSION
-	#define __mbed_sbrk_start (Image$$ARM_LIB_HEAP$$Base)
-	#define __mbed_krbs_start (Image$$ARM_LIB_HEAP$$ZI$$Limit)
-	#define __heap_size (Image$$ARM_LIB_HEAP$$ZI$$Length)
-	extern unsigned int __mbed_sbrk_start;
-	extern unsigned int __mbed_krbs_start;
-	extern unsigned int __heap_size;
-	#pragma import(__use_two_region_memory)
+    #define MBED_SBRK_START &(Image$$ARM_LIB_HEAP$$Base)
+    #define MBED_KRBS_START &(Image$$ARM_LIB_HEAP$$ZI$$Limit)
+    #define HEAP_SIZE       &(Image$$ARM_LIB_HEAP$$ZI$$Length)
+    #pragma import(__use_two_region_memory)
 #else
-	extern uint32_t __mbed_krbs_start;
-	extern uint32_t __mbed_sbrk_start;
+#ifndef TARGET_LIKE_POSIX
+    extern uint32_t __mbed_sbrk_start;
+    extern uint32_t __mbed_krbs_start;
+    #define MBED_SBRK_START &__mbed_sbrk_start
+    #define MBED_KRBS_START &__mbed_krbs_start
+#else
+    extern void *__mbed_sbrk_start;
+    extern void *__mbed_krbs_start;
+    #define MBED_SBRK_START __mbed_sbrk_start
+    #define MBED_KRBS_START __mbed_krbs_start
+#endif
 #endif
 
 #ifdef __cplusplus

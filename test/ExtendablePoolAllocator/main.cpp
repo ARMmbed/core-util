@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-#include "mbed-util/ExtendablePoolAllocator.h"
+#include "core-util/ExtendablePoolAllocator.h"
 #include "mbed/test_env.h"
 #include "mbed-alloc/ualloc.h"
 #include <stdio.h>
@@ -51,7 +51,7 @@ void app_start(int, char**) {
     void *p = allocator.alloc();
     MBED_HOSTTEST_ASSERT(check_value_and_alignment(p));
     MBED_HOSTTEST_ASSERT(allocator.get_num_pools() == 2);
-    // Fill the new pool 
+    // Fill the new pool
     for (unsigned i = 0; i < new_pool_elements - 1; i ++) {
         MBED_HOSTTEST_ASSERT(check_value_and_alignment(allocator.alloc()));
     }

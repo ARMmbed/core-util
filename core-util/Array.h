@@ -20,9 +20,9 @@
 
 #include <stddef.h>
 #include <stdint.h>
-#include "mbed-util/CriticalSectionLock.h"
-#include "mbed-util/PoolAllocator.h"
-#include "mbed-util/mbed-util.h"
+#include "core-util/CriticalSectionLock.h"
+#include "core-util/PoolAllocator.h"
+#include "core-util/mbed-util.h"
 #include "mbed-alloc/ualloc.h"
 
 namespace mbed {
@@ -135,7 +135,7 @@ public:
             }
             {
                 CriticalSectionLock lock;
-                if (prev_capacity == _capacity) { // allocate only if someone else didn't 
+                if (prev_capacity == _capacity) { // allocate only if someone else didn't
                     if((_head = create_new_array(_grow_capacity, _elements, _head)) == NULL) {
                         return false;
                     }

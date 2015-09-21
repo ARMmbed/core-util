@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-#include "mbed-util/PoolAllocator.h"
+#include "core-util/PoolAllocator.h"
 #include "mbed/test_env.h"
 #include <stdio.h>
 #include <stdlib.h>

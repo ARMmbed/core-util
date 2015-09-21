@@ -21,7 +21,7 @@
 #include <stdarg.h>
 #include "device.h"
 #include "mbed/mbed_interface.h"
-#include "mbed-util/mbed-util.h"
+#include "core-util/mbed-util.h"
 #if DEVICE_STDIO_MESSAGES
 #include <stdio.h>
 #endif

@@ -99,6 +99,17 @@ bool atomic_cas(T *ptr, T *expectedCurrentValue, T desiredValue)
     return rc;
 }
 
+/* For ARMv7-M and above, we use the load/store-exclusive instructions to
+ * implement atomic_cas, so we provide three specialization corresponding to the
+ * byte, half-word, and word variants of the instructions. As long as the following
+ * declarations are available, the compiler will find the proper call targets. */
+#if (__CORTEX_M >= 0x03)
+template <> bool atomic_cas<uint8_t> (uint8_t  *ptr, uint8_t  *expectedCurrentValue, uint8_t  desiredValue);
+template <> bool atomic_cas<uint16_t>(uint16_t *ptr, uint16_t *expectedCurrentValue, uint16_t desiredValue);
+template <> bool atomic_cas<uint32_t>(uint32_t *ptr, uint32_t *expectedCurrentValue, uint32_t desiredValue);
+// bool atomic_cas(unsigned *ptr, unsigned *expectedCurrentValue, unsigned desiredValue);
+#endif /* #if (__CORTEX_M >= 0x03) */
+
 /**
  * Atomic increment.
  * @param  valuePtr Target memory location being incremented.

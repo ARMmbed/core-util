@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#include "mbed-util/atomic_ops.h"
-#include "mbed-util/sbrk.h"
+#include "core-util/atomic_ops.h"
+#include "core-util/sbrk.h"
 
 #ifndef TARGET_LIKE_POSIX
 void * volatile mbed_krbs_ptr = &__mbed_krbs_start;
