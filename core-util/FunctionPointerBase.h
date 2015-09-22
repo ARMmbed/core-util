@@ -31,6 +31,14 @@ public:
         return (_membercaller != NULL) && (_object != NULL);
     }
 
+    bool operator==(const FunctionPointerBase& other) const {
+        return ((_object == other._object) &&
+                (_member[0] == other._member[0]) &&
+                (_member[1] == other._member[1]) &&
+                (_member[2] == other._member[2]) &&
+                (_member[3] == other._member[3]));
+    }
+
     /**
      * Clears the current function pointer assignment
      * After clear(), this instance will point to nothing (NULL)
@@ -38,6 +46,7 @@ public:
     virtual void clear() {
         _membercaller = NULL;
         _object = NULL;
+        memset(_member, 0, sizeof(_member));
     }
 
 protected:
@@ -53,7 +62,9 @@ protected:
     static const struct ArgOps _nullops;
 
 protected:
-    FunctionPointerBase():_object(NULL), _membercaller(NULL) {}
+    FunctionPointerBase():_object(NULL), _membercaller(NULL) {
+        memset(_member, 0, sizeof(_member));
+    }
     FunctionPointerBase(const FunctionPointerBase<R> & fp) {
         copy(&fp);
     }
