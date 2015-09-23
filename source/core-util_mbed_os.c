@@ -73,5 +73,5 @@ void core_util_assert_internal(const char *expr, const char *file, int line, con
 
     abort();
 }
-#endif // #ifdef TARGET_LIKE_MBED
+#endif // #ifdef TARGET_LIKE_XXX
 
