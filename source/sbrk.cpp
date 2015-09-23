@@ -17,15 +17,9 @@
 #include "core-util/atomic_ops.h"
 #include "core-util/sbrk.h"
 
-#ifndef TARGET_LIKE_POSIX
-void * volatile mbed_krbs_ptr = &__mbed_krbs_start;
-void * volatile mbed_sbrk_ptr = &__mbed_sbrk_start;
+void * volatile mbed_krbs_ptr     = MBED_KRBS_START;
+void * volatile mbed_sbrk_ptr     = MBED_SBRK_START;
 volatile ptrdiff_t mbed_sbrk_diff = MBED_HEAP_SIZE;
-#else
-void * volatile mbed_krbs_ptr;
-void * volatile mbed_sbrk_ptr;
-volatile ptrdiff_t mbed_sbrk_diff;
-#endif
 
 void * mbed_sbrk(ptrdiff_t size)
 {
@@ -72,7 +66,7 @@ void * mbed_krbs_ex(const ptrdiff_t size, ptrdiff_t *actual)
         return (void *) -1;
     }
 
-    uintptr_t size_internal = (uintptr_t) size;
+    uintptr_t size_internal = (uintptr_t)size;
     // Guarantee minimum allocation size
     if (size_internal < KRBS_INC_MIN) {
         size_internal = KRBS_INC_MIN;
