@@ -125,16 +125,16 @@
  * The macro MBED_HEAP_SIZE adds a level of indirection to abstract __heap_size.
  */
 #ifndef MBED_HEAP_SIZE
-#ifndef TARGET_LIKE_POSIX
-#ifdef __ARMCC_VERSION
-#define __heap_size (Image$$ARM_LIB_HEAP$$ZI$$Length)
-#endif
-extern unsigned int __heap_size;
-#define MBED_HEAP_SIZE ((ptrdiff_t)&__heap_size)
-#else
-extern unsigned int __heap_size;
-#define MBED_HEAP_SIZE ((ptrdiff_t) __heap_size)
-#endif
+#   ifndef TARGET_LIKE_POSIX
+#       ifdef __ARMCC_VERSION
+#           define __heap_size (Image$$ARM_LIB_HEAP$$ZI$$Length)
+#       endif
+        extern unsigned int __heap_size;
+#       define MBED_HEAP_SIZE ((ptrdiff_t)&__heap_size)
+#   else
+        extern unsigned int __heap_size;
+#       define MBED_HEAP_SIZE ((ptrdiff_t) __heap_size)
+#   endif
 #endif /* #ifndef MBED_HEAP_SIZE */
 
 /**
@@ -152,22 +152,22 @@ extern unsigned int __heap_size;
  * abstract these symbols.
  */
 #if !defined(MBED_SBRK_START) || !defined(MBED_KRBS_START)
-#ifndef TARGET_LIKE_POSIX
-#ifdef __ARMCC_VERSION
-#define __mbed_sbrk_start (Image$$ARM_LIB_HEAP$$Base)
-#define __mbed_krbs_start (Image$$ARM_LIB_HEAP$$ZI$$Limit)
-#pragma import(__use_two_region_memory)
-#endif /*#ifdef __ARMCC_VERSION */
-extern unsigned int __mbed_sbrk_start;
-extern unsigned int __mbed_krbs_start;
-#define MBED_SBRK_START &__mbed_sbrk_start
-#define MBED_KRBS_START &__mbed_krbs_start
-#else /* #ifdef TARGET_LIKE_POSIX */
-extern void *__mbed_sbrk_start;
-extern void *__mbed_krbs_start;
-#define MBED_SBRK_START __mbed_sbrk_start
-#define MBED_KRBS_START __mbed_krbs_start
-#endif /* #ifdef TARGET_LIKE_POSIX */
+#   ifndef TARGET_LIKE_POSIX
+#       ifdef __ARMCC_VERSION
+#           define __mbed_sbrk_start (Image$$ARM_LIB_HEAP$$Base)
+#           define __mbed_krbs_start (Image$$ARM_LIB_HEAP$$ZI$$Limit)
+#           pragma import(__use_two_region_memory)
+#       endif /* #ifdef __ARMCC_VERSION */
+        extern unsigned int __mbed_sbrk_start;
+        extern unsigned int __mbed_krbs_start;
+#       define MBED_SBRK_START &__mbed_sbrk_start
+#       define MBED_KRBS_START &__mbed_krbs_start
+#   else /* #ifdef TARGET_LIKE_POSIX */
+        extern void *__mbed_sbrk_start;
+        extern void *__mbed_krbs_start;
+#       define MBED_SBRK_START __mbed_sbrk_start
+#       define MBED_KRBS_START __mbed_krbs_start
+#   endif /* #ifdef TARGET_LIKE_POSIX */
 #endif
 
 #ifdef __cplusplus
