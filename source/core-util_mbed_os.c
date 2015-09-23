@@ -48,5 +48,30 @@ void core_util_assert_internal(const char *expr, const char *file, int line, con
     mbed_die();
 }
 
+#elif defined(TARGET_LIKE_POSIX)
+
+#include <stdlib.h>
+#include <stdarg.h>
+#include <stdio.h>
+
+void core_util_runtime_error_internal(const char *file, int line, const char* format, ...) {
+    fprintf(stderr, "Runtime error in file %s, line %d: ", file, line);
+    va_list arg;
+    va_start(arg, format);
+    vfprintf(stderr, format, arg);
+    va_end(arg);
+
+    exit(1);
+}
+
+void core_util_assert_internal(const char *expr, const char *file, int line, const char* msg)
+{
+    fprintf(stderr, "assertation failed: %s, file: %s, line %d", expr, file, line);
+    if (msg)
+        fprintf(stderr, " (%s)", msg);
+    fprintf(stderr, "\r\n");
+
+    abort();
+}
 #endif // #ifdef TARGET_LIKE_MBED
 
