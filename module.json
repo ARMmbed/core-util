@@ -20,7 +20,7 @@
   },
   "targetDependencies": {
     "mbed": {
-      "cmsis-core": "~0.2.2",
+      "cmsis-core": "~0.4.0",
       "mbed-drivers": ">=0.8.0"
     }
   },
