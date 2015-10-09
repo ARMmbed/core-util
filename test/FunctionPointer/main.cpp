@@ -70,6 +70,6 @@ void runTest(void) {
     MBED_HOSTTEST_RESULT(true);
 }
 
-void app_start(int argc, char* argv[]) {
+void app_start(int, char*[]) {
     minar::Scheduler::postCallback(&runTest);
 }
