@@ -15,6 +15,7 @@
  */
 
 #include "mbed.h"
+#include "test_env.h"
 #include "core-util/Event.h"
 #include <stdio.h>
 
@@ -349,6 +350,11 @@ static void test_event_assignment_and_swap() {
 
 void runTest(void)
 {
+    MBED_HOSTTEST_TIMEOUT(10);
+    MBED_HOSTTEST_SELECT(default_auto);
+    MBED_HOSTTEST_DESCRIPTION(EventHandler test);
+    MBED_HOSTTEST_START("EvenHandler_1");
+
     printf("========== Starting event handler test ==========\r\n");
     test_standalone_funcs();
     test_class_funcs_tca();
@@ -358,6 +364,7 @@ void runTest(void)
 
     printf ("Final MyArg instance count (should be 0): %d\r\n", MyArg::instcount);
     printf ("\r\nTest Complete\r\n");
+    MBED_HOSTTEST_RESULT(MyArg::instcount == 0);
 }
 
 void app_start(int, char* [])
