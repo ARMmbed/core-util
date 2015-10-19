@@ -2,7 +2,10 @@
   "name": "core-util",
   "version": "0.3.1",
   "description": "mbed utilities library",
-  "keywords": [],
+  "keywords": [
+    "mbed",
+    "mbed-official"
+  ],
   "licenses": [
     {
       "url": "https://spdx.org/licenses/Apache-2.0",
@@ -20,8 +23,8 @@
   },
   "targetDependencies": {
     "mbed": {
-      "cmsis-core": "~0.4.0",
-      "mbed-drivers": ">=0.8.0"
+      "cmsis-core": "^1.0.0",
+      "mbed-drivers": "~0.11.0"
     }
   },
   "scripts": {
