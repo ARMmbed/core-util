@@ -19,7 +19,7 @@
 #define __MBED_UTIL_ATOMIC_OPS_H__
 
 #include <stdint.h>
-#include "CriticalSectionLock.h"
+#include "core-util/CriticalSectionLock.h"
 
 namespace mbed {
 namespace util {

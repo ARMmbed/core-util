@@ -16,7 +16,7 @@
  */
 
 #include "core-util/PoolAllocator.h"
-#include "mbed/test_env.h"
+#include "mbed-drivers/test_env.h"
 #include <stdio.h>
 #include <stdlib.h>
 

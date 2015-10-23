@@ -22,7 +22,7 @@
 #include <stddef.h>
 #include <stdarg.h>
 #include <assert.h>
-#include "FunctionPointerBase.h"
+#include "core-util/FunctionPointerBase.h"
 
 #ifndef EVENT_STORAGE_SIZE
 #define EVENT_STORAGE_SIZE 32

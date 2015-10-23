@@ -21,8 +21,8 @@
 #include <stddef.h>
 #include <stdarg.h>
 #include <new>
-#include "FunctionPointerBase.h"
-#include "FunctionPointerBind.h"
+#include "core-util/FunctionPointerBase.h"
+#include "core-util/FunctionPointerBind.h"
 
 namespace mbed {
 namespace util {

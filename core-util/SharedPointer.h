@@ -18,7 +18,7 @@
 #define __CORE_UTIL_SHAREDPOINTER_H__
 
 #include "core-util/core-util.h"
-#include "mbed-alloc/ualloc.h"
+#include "ualloc/ualloc.h"
 
 #include <stdint.h>
 #include <stddef.h>

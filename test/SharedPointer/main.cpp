@@ -17,7 +17,7 @@
 
 #include <stddef.h>
 #include <stdint.h>
-#include "mbed/test_env.h"
+#include "mbed-drivers/test_env.h"
 #include "core-util/SharedPointer.h"
 
 using namespace mbed::util;
