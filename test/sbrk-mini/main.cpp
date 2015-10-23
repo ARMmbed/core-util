@@ -17,7 +17,7 @@
 
 #include <stddef.h>
 #include <stdint.h>
-#include "mbed/test_env.h"
+#include "mbed-drivers/test_env.h"
 #include "core-util/sbrk.h"
 
 extern void * volatile mbed_sbrk_ptr;

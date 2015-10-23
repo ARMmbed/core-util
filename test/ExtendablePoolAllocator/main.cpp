@@ -16,8 +16,8 @@
  */
 
 #include "core-util/ExtendablePoolAllocator.h"
-#include "mbed/test_env.h"
-#include "mbed-alloc/ualloc.h"
+#include "mbed-drivers/test_env.h"
+#include "ualloc/ualloc.h"
 #include <stdio.h>
 #include <stdlib.h>
 

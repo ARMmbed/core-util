@@ -23,7 +23,7 @@
 #include "core-util/CriticalSectionLock.h"
 #include "core-util/PoolAllocator.h"
 #include "core-util/core-util.h"
-#include "mbed-alloc/ualloc.h"
+#include "ualloc/ualloc.h"
 
 namespace mbed {
 namespace util {

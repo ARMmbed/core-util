@@ -22,7 +22,7 @@
 #include <stdint.h>
 #include "core-util/CriticalSectionLock.h"
 #include "core-util/Array.h"
-#include "mbed-alloc/ualloc.h"
+#include "ualloc/ualloc.h"
 #include <stdio.h>
 
 /** A reentrant binary heap class (https://en.wikipedia.org/wiki/Heap_(data_structure))

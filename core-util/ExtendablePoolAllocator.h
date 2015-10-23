@@ -20,7 +20,7 @@
 
 #include <stddef.h>
 #include "core-util/PoolAllocator.h"
-#include "mbed-alloc/ualloc.h"
+#include "ualloc/ualloc.h"
 
 namespace mbed {
 namespace util {

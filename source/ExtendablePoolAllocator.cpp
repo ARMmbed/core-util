@@ -18,7 +18,7 @@
 #include "core-util/ExtendablePoolAllocator.h"
 #include "core-util/PoolAllocator.h"
 #include "core-util/CriticalSectionLock.h"
-#include "mbed-alloc/ualloc.h"
+#include "ualloc/ualloc.h"
 #include <stddef.h>
 #include <stdint.h>
 #include <stdio.h>
