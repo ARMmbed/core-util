@@ -125,9 +125,7 @@ class FunctionPointer1 : public FunctionPointerBase<R> {
 public:
     typedef struct arg_struct{
         A1 a1;
-        arg_struct(const A1 &b1) {
-            a1 = b1;
-        }
+        arg_struct(const A1 &b1) : a1(b1){}
     } ArgStruct;
     typedef R(*static_fp)(A1);
     /** Create a FunctionPointer, attaching a static function
@@ -237,10 +235,7 @@ public:
     typedef struct arg_struct{
         A1 a1;
         A2 a2;
-        arg_struct(const A1 &b1, const A2 &b2) {
-            a1 = b1;
-            a2 = b2;
-        }
+        arg_struct(const A1 &b1, const A2 &b2) : a1(b1), a2(b2) {}
     } ArgStruct;
     typedef R(*static_fp)(A1, A2);
     /** Create a FunctionPointer, attaching a static function
@@ -350,11 +345,7 @@ public:
         A1 a1;
         A2 a2;
         A3 a3;
-        arg_struct(const A1 &b1, const A2 &b2, const A3 &b3) {
-            a1 = b1;
-            a2 = b2;
-            a3 = b3;
-        }
+        arg_struct(const A1 &b1, const A2 &b2, const A3 &b3) : a1(b1), a2(b2), a3(b3) {}
     } ArgStruct;
     typedef R(*static_fp)(A1, A2, A3);
     /** Create a FunctionPointer, attaching a static function
@@ -465,12 +456,8 @@ public:
         A2 a2;
         A3 a3;
         A4 a4;
-        arg_struct(const A1 &b1, const A2 &b2, const A3 &b3, const A4 &b4) {
-            a1 = b1;
-            a2 = b2;
-            a3 = b3;
-            a4 = b4;
-        }
+        arg_struct(const A1 &b1, const A2 &b2, const A3 &b3, const A4 &b4) :
+            a1(b1), a2(b2), a3(b3), a4(b4) {}
     } ArgStruct;
     typedef R(*static_fp)(A1, A2, A3, A4);
     /** Create a FunctionPointer, attaching a static function
@@ -572,7 +559,6 @@ const struct FunctionPointerBase<R>::ArgOps FunctionPointer4<R,A1,A2,A3,A4>::_fp
 };
 
 typedef FunctionPointer0<void> FunctionPointer;
-//typedef FunctionPointer1<void, int> event_callback_t;
 
 } // namespace util
 } // namespace mbed
