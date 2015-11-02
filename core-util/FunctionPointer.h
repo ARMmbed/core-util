@@ -83,9 +83,12 @@ public:
     R call(){
         return FunctionPointerBase<R>::call(NULL);
     }
+    R operator ()(void) {
+        return FunctionPointerBase<R>::call(NULL);
+    }
 
     FunctionPointerBind<R> bind() {
-        FunctionPointerBind<R> fp;
+        FunctionPointerBind<R> fp(*this);
         void * storage = this->preBind(fp, (ArgStruct *)NULL, &FunctionPointerBase<R>::_nullops);
         new(storage) ArgStruct();
         return fp;
@@ -95,9 +98,6 @@ public:
         return reinterpret_cast<static_fp>(FunctionPointerBase<R>::_object);
     }
 
-    R operator ()(void) {
-        return call();
-    }
 
 private:
     template<typename T>
@@ -183,15 +183,16 @@ public:
         ArgStruct Args(a1);
         return FunctionPointerBase<R>::call(&Args);
     }
+    R operator ()(A1 a1) {
+        ArgStruct Args(a1);
+        return FunctionPointerBase<R>::call(&Args);
+    }
 
     static_fp get_function()const
     {
         return reinterpret_cast<static_fp>(FunctionPointerBase<R>::_object);
     }
 
-    R operator ()(A1 a) {
-        return call(a);
-    }
 
 private:
     template<typename T>
@@ -279,7 +280,7 @@ public:
     }
 
     FunctionPointerBind<R> bind(const A1 &a1, const A2 &a2) {
-        FunctionPointerBind<R> fp;
+        FunctionPointerBind<R> fp(*this);
         void * storage = this->preBind(fp, (ArgStruct *)NULL, &_fp2_ops);
         new(storage) ArgStruct(a1,a2);
         return fp;
@@ -293,15 +294,16 @@ public:
         ArgStruct Args(a1, a2);
         return FunctionPointerBase<R>::call(&Args);
     }
+    R operator ()(A1 a1, A2 a2) {
+        ArgStruct Args(a1, a2);
+        return FunctionPointerBase<R>::call(&Args);
+    }
 
     static_fp get_function()const
     {
         return reinterpret_cast<static_fp>(FunctionPointerBase<R>::_object);
     }
 
-    R operator ()(A1 a1, A2 a2) {
-        return call(a1, a2);
-    }
 
 private:
     template<typename T>
@@ -389,7 +391,7 @@ public:
     }
 
     FunctionPointerBind<R> bind(const A1 &a1, const A2 &a2, const A3 &a3) {
-        FunctionPointerBind<R> fp;
+        FunctionPointerBind<R> fp(*this);
         void * storage = this->preBind(fp, (ArgStruct *)NULL, &_fp3_ops);
         new(storage) ArgStruct(a1,a2,a3);
         return fp;
@@ -403,15 +405,16 @@ public:
         ArgStruct Args(a1, a2, a3);
         return FunctionPointerBase<R>::call(&Args);
     }
+    R operator ()(A1 a1, A2 a2, A3 a3) {
+        ArgStruct Args(a1, a2, a3);
+        return FunctionPointerBase<R>::call(&Args);
+    }
 
     static_fp get_function()const
     {
         return reinterpret_cast<static_fp>(FunctionPointerBase<R>::_object);
     }
 
-    R operator ()(A1 a1, A2 a2, A3 a3) {
-        return call(a1, a2, a3);
-    }
 
 private:
     template<typename T>
@@ -501,7 +504,7 @@ public:
     }
 
     FunctionPointerBind<R> bind(const A1 &a1, const A2 &a2, const A3 &a3, const A4 &a4) {
-        FunctionPointerBind<R> fp;
+        FunctionPointerBind<R> fp(*this);
         void * storage = preBind(&fp, (ArgStruct *)NULL, &_fp4_ops);
         new(storage) ArgStruct(a1,a2,a3,a4);
         return fp;
@@ -515,15 +518,16 @@ public:
         ArgStruct Args(a1, a2, a3, a4);
         return FunctionPointerBase<R>::call(&Args);
     }
+    R operator ()(A1 a1, A2 a2, A3 a3, A4 a4) {
+        ArgStruct Args(a1, a2, a3, a4);
+        return FunctionPointerBase<R>::call(&Args);
+    }
 
     static_fp get_function()const
     {
         return reinterpret_cast<static_fp>(FunctionPointerBase<R>::_object);
     }
 
-    R operator ()(A1 a1, A2 a2, A3 a3, A4 a4) {
-        return call(a1, a2, a3, a4);
-    }
 
 private:
     template<typename T>

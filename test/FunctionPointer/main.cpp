@@ -17,6 +17,8 @@
 #include "mbed-drivers/mbed.h"
 #include "mbed-drivers/test_env.h"
 #include "core-util/FunctionPointer.h"
+#include "lifetime.hpp"
+#include "int_types.hpp"
 
 namespace {
 volatile int ebp_flag = 0;
@@ -38,6 +40,9 @@ void bareprint() {
 }
 
 void runTest(void) {
+    static Serial pc(USBTX, USBRX);
+    pc.baud(115200);
+
     MBED_HOSTTEST_TIMEOUT(10);
     MBED_HOSTTEST_SELECT(default_auto);
     MBED_HOSTTEST_DESCRIPTION(FunctionPointer test);
@@ -54,20 +59,22 @@ void runTest(void) {
     printf("sizeof(bp) = %d\r\n", ebsize);
     printf("sizeof(cp) = %d\r\n", ecsize);
 
-    bool result = false;
+    bool result = true;
     // Test checks
     {
         ebp.call();
-        result &= ebp_flag;
+        result = result && ebp_flag;
         printf("ebp_flag = %d\r\n", ebp_flag);
 
         ecp.call();
-        result &= ecp_flag;
+        result = result && ecp_flag;
         printf("ecp_flag = %d\r\n", ecp_flag);
     }
+    result = result && testInts();
+    result = result && checkLifetime();
 
     printf("Test Complete\r\n");
-    MBED_HOSTTEST_RESULT(true);
+    MBED_HOSTTEST_RESULT(result);
 }
 
 void app_start(int, char*[]) {
