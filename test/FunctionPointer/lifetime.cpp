@@ -29,6 +29,13 @@ public:
     ~LifetimeChecker() {
         _activeInstances--;
     }
+
+    LifetimeChecker& operator = (const LifetimeChecker & rhs) {
+        _cc = true;
+        _arg = rhs._arg;
+        return *this;
+    }
+
     static int getInstances() {
         return _activeInstances;
     }
