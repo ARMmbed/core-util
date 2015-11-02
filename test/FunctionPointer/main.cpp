@@ -70,8 +70,10 @@ void runTest(void) {
         result = result && ecp_flag;
         printf("ecp_flag = %d\r\n", ecp_flag);
     }
-    result = result && testInts();
-    result = result && checkLifetime();
+    bool iResult = testInts();
+    result = result && iResult;
+    bool lifeResult = checkLifetime();
+    result = result && lifeResult;
 
     printf("Test Complete\r\n");
     MBED_HOSTTEST_RESULT(result);
