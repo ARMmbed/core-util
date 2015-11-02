@@ -18,80 +18,80 @@
 #include "core-util/FunctionPointer.h"
 #include "int_types.hpp"
 
- bool called;
+bool called;
 
- void vsi(int i)
- {
-     called=true;
-     printf("%s called with %i\r\n", __PRETTY_FUNCTION__, i);
- }
- void vspi(int *pi)
- {
-     called=true;
-     printf("%s called with %i\r\n", __PRETTY_FUNCTION__, *pi);
- }
- void vsri(int& ri)
- {
-     called=true;
-     printf("%s called with %i\r\n", __PRETTY_FUNCTION__, ri);
- }
- void vsci(const int i)
- {
-     called=true;
-     printf("%s called with %i\r\n", __PRETTY_FUNCTION__, i);
- }
- void vscpi(const int *pi)
- {
-     called=true;
-     printf("%s called with %i\r\n", __PRETTY_FUNCTION__, *pi);
- }
- void vscri(const int& ri)
- {
-     called=true;
-     printf("%s called with %i\r\n", __PRETTY_FUNCTION__, ri);
- }
+void vsi(int i)
+{
+    called=true;
+    printf("%s called with %i\r\n", __PRETTY_FUNCTION__, i);
+}
+void vspi(int *pi)
+{
+    called=true;
+    printf("%s called with %i\r\n", __PRETTY_FUNCTION__, *pi);
+}
+void vsri(int& ri)
+{
+    called=true;
+    printf("%s called with %i\r\n", __PRETTY_FUNCTION__, ri);
+}
+void vsci(const int i)
+{
+    called=true;
+    printf("%s called with %i\r\n", __PRETTY_FUNCTION__, i);
+}
+void vscpi(const int *pi)
+{
+    called=true;
+    printf("%s called with %i\r\n", __PRETTY_FUNCTION__, *pi);
+}
+void vscri(const int& ri)
+{
+    called=true;
+    printf("%s called with %i\r\n", __PRETTY_FUNCTION__, ri);
+}
 
- bool testInts(){
-     bool passed = true;
-     {
-         mbed::util::FunctionPointer1<void,int> fp_vsi(vsi);
-         called = false;
-         fp_vsi(1);
-         passed = called && passed;
-     }
-     {
-         mbed::util::FunctionPointer1<void,int *> fp_vspi(vspi);
-         called = false;
-         int i = 2;
-         fp_vspi(&i);
-         passed = called && passed;
-     }
-     {
-         mbed::util::FunctionPointer1<void,int &> fp_vsri(vsri);
-         called = false;
-         int i = 3;
-         fp_vsri(i);
-         passed = called && passed;
-     }
-     {
-         mbed::util::FunctionPointer1<void,const int> fp_vsci(vsci);
-         called = false;
-         fp_vsci(4);
-         passed = called && passed;
-     }
-     {
-         mbed::util::FunctionPointer1<void,const int *> fp_vscpi(vscpi);
-         called = false;
-         int i = 5;
-         fp_vscpi(&i);
-         passed = called && passed;
-     }
-     {
-         mbed::util::FunctionPointer1<void,const int &> fp_vscri(vscri);
-         called = false;
-         int i = 6;
-         fp_vscri(i);
-         passed = called && passed;
-     }
-     return passed;
- }
+bool testInts(){
+    bool passed = true;
+    {
+        mbed::util::FunctionPointer1<void,int> fp_vsi(vsi);
+        called = false;
+        fp_vsi(1);
+        passed = called && passed;
+    }
+    {
+        mbed::util::FunctionPointer1<void,int *> fp_vspi(vspi);
+        called = false;
+        int i = 2;
+        fp_vspi(&i);
+        passed = called && passed;
+    }
+    {
+        mbed::util::FunctionPointer1<void,int &> fp_vsri(vsri);
+        called = false;
+        int i = 3;
+        fp_vsri(i);
+        passed = called && passed;
+    }
+    {
+        mbed::util::FunctionPointer1<void,const int> fp_vsci(vsci);
+        called = false;
+        fp_vsci(4);
+        passed = called && passed;
+    }
+    {
+        mbed::util::FunctionPointer1<void,const int *> fp_vscpi(vscpi);
+        called = false;
+        int i = 5;
+        fp_vscpi(&i);
+        passed = called && passed;
+    }
+    {
+        mbed::util::FunctionPointer1<void,const int &> fp_vscri(vscri);
+        called = false;
+        int i = 6;
+        fp_vscri(i);
+        passed = called && passed;
+    }
+    return passed;
+}
