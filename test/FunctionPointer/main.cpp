@@ -17,8 +17,9 @@
 #include "mbed-drivers/mbed.h"
 #include "mbed-drivers/test_env.h"
 #include "core-util/FunctionPointer.h"
-#include "lifetime.hpp"
 #include "int_types.hpp"
+#include "lifetime.hpp"
+#include "side_effects.hpp"
 
 namespace {
 volatile int ebp_flag = 0;
@@ -73,6 +74,8 @@ void runTest(void) {
     bool iResult = testInts();
     result = result && iResult;
     bool lifeResult = checkLifetime();
+    result = result && lifeResult;
+    bool sideEffectResult = checkSideEffects();
     result = result && lifeResult;
 
     printf("Test Complete\r\n");

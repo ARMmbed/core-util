@@ -20,32 +20,32 @@
 
 bool called;
 
-void vsi(int i)
+static void vsi(int i)
 {
     called=true;
     printf("%s called with %i\r\n", __PRETTY_FUNCTION__, i);
 }
-void vspi(int *pi)
+static void vspi(int *pi)
 {
     called=true;
     printf("%s called with %i\r\n", __PRETTY_FUNCTION__, *pi);
 }
-void vsri(int& ri)
+static void vsri(int& ri)
 {
     called=true;
     printf("%s called with %i\r\n", __PRETTY_FUNCTION__, ri);
 }
-void vsci(const int i)
+static void vsci(const int i)
 {
     called=true;
     printf("%s called with %i\r\n", __PRETTY_FUNCTION__, i);
 }
-void vscpi(const int *pi)
+static void vscpi(const int *pi)
 {
     called=true;
     printf("%s called with %i\r\n", __PRETTY_FUNCTION__, *pi);
 }
-void vscri(const int& ri)
+static void vscri(const int& ri)
 {
     called=true;
     printf("%s called with %i\r\n", __PRETTY_FUNCTION__, ri);
