@@ -32,11 +32,7 @@ public:
     }
 
     bool operator==(const FunctionPointerBase& other) const {
-        return ((_object == other._object) &&
-                (_member[0] == other._member[0]) &&
-                (_member[1] == other._member[1]) &&
-                (_member[2] == other._member[2]) &&
-                (_member[3] == other._member[3]));
+        return ((_object == other._object) && (memcmp(_member, other._member, sizeof(_member)) == 0));
     }
 
     /**
@@ -55,10 +51,24 @@ protected:
         void (*copy_args)(void *, void *);
         void (*destructor)(void *);
     };
+
+    // Forward declaration of anonymous class 
+    class AnonymousClass;
+    // Forward declaration of anonymous member function to this anonymous class
+    // this kind of declaration is authorized by the standard (see 8.3.3/2 of C++ 03 standard).  
+    // As a result, the compiler will allocate for AnonymousFunctionMember_t the biggest size 
+    // and biggest alignment possible for member function. 
+    // This type can be used inside unions, it will help to provide the storage 
+    // with the proper size and alignment guarantees 
+    typedef void (AnonymousClass::*AnonymousFunctionMember_t)();
+
+    union { 
+        char _member[sizeof(AnonymousFunctionMember_t)];
+        AnonymousFunctionMember_t _alignementAndSizeGuarantees;
+    };
+
     void * _object; // object Pointer/function pointer
-    R (*_membercaller)(void *, uintptr_t *, void *);
-    // aligned raw member function pointer storage - converted back by registered _membercaller
-    uintptr_t _member[4];
+    R (*_membercaller)(void *, char *, void *);
     static const struct ArgOps _nullops;
 
 protected:
