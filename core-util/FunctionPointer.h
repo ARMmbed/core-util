@@ -169,7 +169,7 @@ public:
     }
 
     FunctionPointerBind<R> bind(const A1 &a1) {
-        FunctionPointerBind<R> fp;
+        FunctionPointerBind<R> fp(*this);
         void * storage = this->preBind(fp, (ArgStruct *)NULL, &_fp1_ops);
         new(storage) ArgStruct(a1);
         return fp;
