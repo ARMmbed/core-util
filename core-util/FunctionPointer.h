@@ -89,7 +89,7 @@ public:
 
     FunctionPointerBind<R> bind() {
         FunctionPointerBind<R> fp(*this);
-        void * storage = this->preBind(fp, (ArgStruct *)NULL, &FunctionPointerBase<R>::_nullops);
+        void * storage = this->pre_bind(fp, (ArgStruct *)NULL, &FunctionPointerBase<R>::_nullops);
         new(storage) ArgStruct();
         return fp;
     }
@@ -170,7 +170,7 @@ public:
 
     FunctionPointerBind<R> bind(const A1 &a1) {
         FunctionPointerBind<R> fp(*this);
-        void * storage = this->preBind(fp, (ArgStruct *)NULL, &_fp1_ops);
+        void * storage = this->pre_bind(fp, (ArgStruct *)NULL, &_fp1_ops);
         new(storage) ArgStruct(a1);
         return fp;
     }
@@ -281,7 +281,7 @@ public:
 
     FunctionPointerBind<R> bind(const A1 &a1, const A2 &a2) {
         FunctionPointerBind<R> fp(*this);
-        void * storage = this->preBind(fp, (ArgStruct *)NULL, &_fp2_ops);
+        void * storage = this->pre_bind(fp, (ArgStruct *)NULL, &_fp2_ops);
         new(storage) ArgStruct(a1,a2);
         return fp;
     }
@@ -392,7 +392,7 @@ public:
 
     FunctionPointerBind<R> bind(const A1 &a1, const A2 &a2, const A3 &a3) {
         FunctionPointerBind<R> fp(*this);
-        void * storage = this->preBind(fp, (ArgStruct *)NULL, &_fp3_ops);
+        void * storage = this->pre_bind(fp, (ArgStruct *)NULL, &_fp3_ops);
         new(storage) ArgStruct(a1,a2,a3);
         return fp;
     }
@@ -505,7 +505,7 @@ public:
 
     FunctionPointerBind<R> bind(const A1 &a1, const A2 &a2, const A3 &a3, const A4 &a4) {
         FunctionPointerBind<R> fp(*this);
-        void * storage = preBind(&fp, (ArgStruct *)NULL, &_fp4_ops);
+        void * storage = this->pre_bind(&fp, (ArgStruct *)NULL, &_fp4_ops);
         new(storage) ArgStruct(a1,a2,a3,a4);
         return fp;
     }

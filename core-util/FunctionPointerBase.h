@@ -98,7 +98,7 @@ protected:
     }
 
     template <typename S>
-    void * preBind(FunctionPointerBind<R> & fp, S * argStruct, const struct FunctionPointerBase<R>::ArgOps *ops)
+    void * pre_bind(FunctionPointerBind<R> & fp, S * argStruct, const struct FunctionPointerBase<R>::ArgOps *ops)
     {
         MBED_STATIC_ASSERT(sizeof(S) <= sizeof(fp._storage), ERROR: Arguments too large for FunctionPointerBind internal storage)
         (void) argStruct;
