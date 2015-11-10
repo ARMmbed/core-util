@@ -19,12 +19,13 @@
 
 #include <stdlib.h>
 #include <stdarg.h>
-#include "device.h"
-#include "mbed-drivers/mbed_interface.h"
-#include "core-util/core-util.h"
 #if DEVICE_STDIO_MESSAGES
 #include <stdio.h>
 #endif
+
+#include "device.h"
+#include "mbed-drivers/mbed_interface.h"
+#include "core-util/assert.h"
 
 void core_util_runtime_error_internal(const char *file, int line, const char* format, ...) {
 #if DEVICE_STDIO_MESSAGES

@@ -21,6 +21,8 @@
 #include <stdarg.h>
 #include <stdio.h>
 
+#include "core-util/assert.h"
+
 void core_util_runtime_error_internal(const char *file, int line, const char* format, ...) {
     fprintf(stderr, "Runtime error in file %s, line %d: ", file, line);
     va_list arg;
