@@ -100,13 +100,13 @@ public:
 
 private:
     template<typename T>
-    static R membercaller(void *object, uintptr_t *member, void *arg) {
+    static R membercaller(void *object, char *member, void *arg) {
         (void) arg;
         T* o = static_cast<T*>(object);
         R (T::**m)(void) = reinterpret_cast<R (T::**)(void)>(member);
         return (o->**m)();
     }
-    static R staticcaller(void *object, uintptr_t *member, void *arg) {
+    static R staticcaller(void *object, char *member, void *arg) {
         (void) arg;
         (void) member;
         static_fp f = reinterpret_cast<static_fp>(object);
@@ -196,13 +196,13 @@ public:
 
 private:
     template<typename T>
-    static R membercaller(void *object, uintptr_t *member, void *arg) {
+    static R membercaller(void *object, char *member, void *arg) {
         ArgStruct *Args = static_cast<ArgStruct *>(arg);
         T* o = static_cast<T*>(object);
         R (T::**m)(A1) = reinterpret_cast<R (T::**)(A1)>(member);
         return (o->**m)(Args->a1);
     }
-    static R staticcaller(void *object, uintptr_t *member, void *arg) {
+    static R staticcaller(void *object, char *member, void *arg) {
         ArgStruct *Args = static_cast<ArgStruct *>(arg);
         (void) member;
         static_fp f = reinterpret_cast<static_fp>(object);
@@ -314,13 +314,13 @@ public:
 
 private:
     template<typename T>
-    static R membercaller(void *object, uintptr_t *member, void *arg) {
+    static R membercaller(void *object, char *member, void *arg) {
         ArgStruct *Args = static_cast<ArgStruct *>(arg);
         T* o = static_cast<T*>(object);
         R (T::**m)(A1, A2) = reinterpret_cast<R (T::**)(A1, A2)>(member);
         return (o->**m)(Args->a1, Args->a2);
     }
-    static R staticcaller(void *object, uintptr_t *member, void *arg) {
+    static R staticcaller(void *object, char *member, void *arg) {
         ArgStruct *Args = static_cast<ArgStruct *>(arg);
         (void) member;
         static_fp f = reinterpret_cast<static_fp>(object);
@@ -435,13 +435,13 @@ public:
 
 private:
     template<typename T>
-    static R membercaller(void *object, uintptr_t *member, void *arg) {
+    static R membercaller(void *object, char *member, void *arg) {
         ArgStruct *Args = static_cast<ArgStruct *>(arg);
         T* o = static_cast<T*>(object);
         R (T::**m)(A1, A2, A3) = reinterpret_cast<R (T::**)(A1, A2, A3)>(member);
         return (o->**m)(Args->a1, Args->a2, Args->a3);
     }
-    static R staticcaller(void *object, uintptr_t *member, void *arg) {
+    static R staticcaller(void *object, char *member, void *arg) {
         ArgStruct *Args = static_cast<ArgStruct *>(arg);
         (void) member;
         static_fp f = reinterpret_cast<static_fp>(object);
@@ -559,13 +559,13 @@ public:
 
 private:
     template<typename T>
-    static R membercaller(void *object, uintptr_t *member, void *arg) {
+    static R membercaller(void *object, char *member, void *arg) {
         ArgStruct *Args = static_cast<ArgStruct *>(arg);
         T* o = static_cast<T*>(object);
         R (T::**m)(A1, A2, A3, A4) = reinterpret_cast<R (T::**)(A1, A2, A3, A4)>(member);
         return (o->**m)(Args->a1, Args->a2, Args->a3, Args->a4);
     }
-    static R staticcaller(void *object, uintptr_t *member, void *arg) {
+    static R staticcaller(void *object, char *member, void *arg) {
         ArgStruct *Args = static_cast<ArgStruct *>(arg);
         (void) member;
         static_fp f = reinterpret_cast<static_fp>(object);
