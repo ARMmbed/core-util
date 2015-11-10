@@ -54,6 +54,27 @@ public:
         memset(_member, 0, sizeof(_member));
     }
 
+    /**
+     * Calls the member pointed to by object::member or (function)object
+     * @param arg
+     * @return
+     */
+    inline R call(void* arg) {
+#ifndef YOTTA_CFG_UTIL_FUNCTIONPOINTER_DISABLE_NULL_CHECK
+        CORE_UTIL_ASSERT((_membercaller != NULL) && (_object != NULL));
+#endif
+        return _membercaller(_object, _member, arg);
+    }
+
+    FunctionPointerBase():_object(NULL), _membercaller(NULL) {
+        memset(_member, 0, sizeof(_member));
+    }
+    FunctionPointerBase(const FunctionPointerBase<R> & fp) {
+        copy(&fp);
+    }
+    virtual ~FunctionPointerBase() {
+
+    }
 protected:
     struct ArgOps {
         void (*copy_args)(void *, void *);
@@ -80,26 +101,6 @@ protected:
     static const struct ArgOps _nullops;
 
 protected:
-    FunctionPointerBase():_object(NULL), _membercaller(NULL) {
-        memset(_member, 0, sizeof(_member));
-    }
-    FunctionPointerBase(const FunctionPointerBase<R> & fp) {
-        copy(&fp);
-    }
-    virtual ~FunctionPointerBase() {
-    }
-
-    /**
-     * Calls the member pointed to by object::member or (function)object
-     * @param arg
-     * @return
-     */
-    inline R call(void* arg) {
-#ifndef YOTTA_CFG_UTIL_FUNCTIONPOINTER_DISABLE_NULL_CHECK
-        CORE_UTIL_ASSERT((_membercaller != NULL) && (_object != NULL));
-#endif
-        return _membercaller(_object, _member, arg);
-    }
 
     void copy(const FunctionPointerBase<R> * fp) {
         _object = fp->_object;
