@@ -21,13 +21,22 @@
 #include <stddef.h>
 #include <stdarg.h>
 
+#include "core-util/core-util.h"
 namespace mbed {
 namespace util {
+
+#define MBED_STATIC_ASSERT(MBED_STATIC_ASSERT_FAILED,MSG)\
+    switch(0){\
+        case 0:case (MBED_STATIC_ASSERT_FAILED): \
+        break;}
+
+template<typename R>
+class FunctionPointerBind;
 
 template<typename R>
 class FunctionPointerBase {
 public:
-    operator bool(void) const {
+    inline operator bool(void) const {
         return (_membercaller != NULL) && (_object != NULL);
     }
 
@@ -47,7 +56,6 @@ public:
 
 protected:
     struct ArgOps {
-        void (*constructor)(void *, va_list);
         void (*copy_args)(void *, void *);
         void (*destructor)(void *);
     };
@@ -87,6 +95,9 @@ protected:
      * @return
      */
     inline R call(void* arg) {
+#ifndef YOTTA_CFG_UTIL_FUNCTIONPOINTER_DISABLE_NULL_CHECK
+        CORE_UTIL_ASSERT((_membercaller != NULL) && (_object != NULL));
+#endif
         return _membercaller(_object, _member, arg);
     }
 
@@ -95,15 +106,22 @@ protected:
         memcpy (_member, fp->_member, sizeof(_member));
         _membercaller = fp->_membercaller;
     }
+
+    template <typename S>
+    void * pre_bind(FunctionPointerBind<R> & fp, S * argStruct, const struct FunctionPointerBase<R>::ArgOps *ops)
+    {
+        MBED_STATIC_ASSERT(sizeof(S) <= sizeof(fp._storage), ERROR: Arguments too large for FunctionPointerBind internal storage)
+        (void) argStruct;
+        fp._ops = ops;
+        return (void*)fp._storage;
+    }
 private:
-    static void _null_constructor(void * dest, va_list args) {(void) dest;(void) args;}
     static void _null_copy_args(void *dest , void* src) {(void) dest; (void) src;}
     static void _null_destructor(void *args) {(void) args;}
 
 };
 template<typename R>
 const struct FunctionPointerBase<R>::ArgOps FunctionPointerBase<R>::_nullops = {
-    FunctionPointerBase<R>::_null_constructor,
     FunctionPointerBase<R>::_null_copy_args,
     FunctionPointerBase<R>::_null_destructor
 };

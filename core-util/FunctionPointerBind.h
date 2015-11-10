@@ -20,11 +20,13 @@
 #include <string.h>
 #include <stdint.h>
 #include <stddef.h>
-#include <stdarg.h>
 #include <assert.h>
 #include "core-util/FunctionPointerBase.h"
 
-#ifndef EVENT_STORAGE_SIZE
+
+#ifdef YOTTA_CFG_UTIL_FUNCTIONPOINTER_ARG_STORAGE
+#define EVENT_STORAGE_SIZE (YOTTA_CFG_UTIL_FUNCTIONPOINTER_ARG_STORAGE)
+#else
 #define EVENT_STORAGE_SIZE 32
 #endif
 
@@ -36,8 +38,12 @@
 namespace mbed {
 namespace util {
 
+template <typename R>
+class FunctionPointerBase;
+
 template<typename R>
 class FunctionPointerBind : public FunctionPointerBase<R> {
+friend FunctionPointerBase<R>;
 public:
     // Call the Event
     inline R call() {
@@ -46,6 +52,10 @@ public:
     FunctionPointerBind():
         FunctionPointerBase<R>(),
         _ops(&FunctionPointerBase<R>::_nullops)
+    {}
+
+    FunctionPointerBind(const FunctionPointerBase<R> & fp) :
+        FunctionPointerBase<R>(fp)
     {}
 
     FunctionPointerBind(const FunctionPointerBind<R> & fp):
@@ -77,27 +87,6 @@ public:
         }
         _ops = &FunctionPointerBase<R>::_nullops;
         FunctionPointerBase<R>::clear();
-    }
-
-    template<typename S>
-    FunctionPointerBind<R> & bind(const struct FunctionPointerBase<R>::ArgOps * ops , S * argStruct, FunctionPointerBase<R> *fp, ...) {
-        MBED_STATIC_ASSERT(sizeof(S) <= sizeof(_storage), ERROR: Arguments too large for FunctionPointerBind internal storage)
-        if (_ops != &FunctionPointerBase<R>::_nullops) {
-            _ops->destructor(_storage);
-        }
-        _ops = ops;
-        FunctionPointerBase<R>::copy(fp);
-        assert(this->_ops != NULL);
-        assert(this->_ops->constructor != NULL);
-        if (argStruct) {
-            this->_ops->copy_args(this->_storage, (void *)argStruct);
-        } else {
-            va_list args;
-            va_start(args, fp);
-            this->_ops->constructor(_storage, args);
-            va_end(args);
-        }
-        return *this;
     }
 
     R operator()() {
