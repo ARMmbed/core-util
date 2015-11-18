@@ -75,7 +75,7 @@ public:
       * @param p the pointer to check
       * @returns true if the pointer is inside this pool, false otherwise
       */
-    bool owns(void *p) const;
+    bool owns(const void *p) const;
 
     /** Aligns a quantity up to the given alignment (which must be a power of 2)
       * @param n the quantity to align

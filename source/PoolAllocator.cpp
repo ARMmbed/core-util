@@ -56,7 +56,7 @@ void PoolAllocator::free(void* p) {
     }
 }
 
-bool PoolAllocator::owns(void *p) const {
+bool PoolAllocator::owns(const void *p) const {
     return (p >= _start) && (p < _end);
 }
 
