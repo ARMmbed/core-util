@@ -45,8 +45,9 @@ void* PoolAllocator::alloc() {
 
 void PoolAllocator::free(void* p) {
     if (owns(p)) {
-        uintptr_t prev_free = reinterpret_cast<uintptr_t>(_free_block);
         while (true) {
+            uintptr_t prev_free = reinterpret_cast<uintptr_t>(_free_block);
+
             *((void**)p) = (void*)prev_free;
             if (atomic_cas((uintptr_t*)&_free_block, &prev_free, (uintptr_t)p)) {
                 break;
