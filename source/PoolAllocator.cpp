@@ -32,12 +32,12 @@ PoolAllocator::PoolAllocator(void *start, size_t elements, size_t element_size, 
 }
 
 void* PoolAllocator::alloc() {
-    uint32_t prev_free = (uint32_t)_free_block;
+    uintptr_t prev_free = reinterpret_cast<uintptr_t>(_free_block);
     if (0 == prev_free)
         return NULL;
     while (true) {
         void **const new_free = (void **)(*((void **)prev_free));
-        if (atomic_cas((uint32_t*)&_free_block, &prev_free, (uint32_t)new_free)) {
+        if (atomic_cas((uintptr_t*)&_free_block, &prev_free, (uintptr_t)new_free)) {
             return (void*)prev_free;
         }
     }
@@ -45,10 +45,10 @@ void* PoolAllocator::alloc() {
 
 void PoolAllocator::free(void* p) {
     if (owns(p)) {
-        uint32_t prev_free = (uint32_t)_free_block;
+        uintptr_t prev_free = reinterpret_cast<uintptr_t>(_free_block);
         while (true) {
             *((void**)p) = (void*)prev_free;
-            if (atomic_cas((uint32_t*)&_free_block, &prev_free, (uint32_t)p)) {
+            if (atomic_cas((uintptr_t*)&_free_block, &prev_free, (uintptr_t)p)) {
                 break;
             }
         }
