@@ -25,9 +25,8 @@
 namespace mbed {
 namespace util {
 
-PoolAllocator::PoolAllocator(void *start, size_t elements, size_t element_size, size_t alignment):
-    _start(start), _element_size(element_size) {
-    _element_size = align_up(element_size, alignment);
+PoolAllocator::PoolAllocator(void *start, size_t elements, size_t element_size, unsigned alignment):
+    _start(start), _element_size(align_up(element_size, alignment)) {
     _end = (void*)((uint8_t*)start + _element_size * elements);
     _init();
 }
