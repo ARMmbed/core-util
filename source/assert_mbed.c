@@ -17,14 +17,18 @@
 
 #ifdef TARGET_LIKE_MBED // only include this code for mbed targets
 
+// device.h header file defines whether we have files or not, so must come
+// first
+#include "device.h"
+
 #include <stdlib.h>
 #include <stdarg.h>
-#include "device.h"
-#include "mbed-drivers/mbed_interface.h"
-#include "core-util/core-util.h"
 #if DEVICE_STDIO_MESSAGES
 #include <stdio.h>
 #endif
+
+#include "mbed-drivers/mbed_interface.h"
+#include "core-util/assert.h"
 
 void core_util_runtime_error_internal(const char *file, int line, const char* format, ...) {
 #if DEVICE_STDIO_MESSAGES

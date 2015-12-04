@@ -15,40 +15,12 @@
  * limitations under the License.
  */
 
-#ifndef __CORE_UTIL_MBED_UTIL_H__
-#define __CORE_UTIL_MBED_UTIL_H__
+#ifndef __CORE_UTIL_CORE_UTIL_H__
+#define __CORE_UTIL_CORE_UTIL_H__
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+// this file used to include the definitions now in assert.h, forward the
+// include for compatibility:
+#warning "core-util/core-util.h is deprecated: use core-util/assert.h instead"
+#include "./assert.h"
 
-#ifdef NDEBUG
-#define CORE_UTIL_ASSERT(expr)              ((void)0)
-#define CORE_UTIL_ASSERT_MSG(expr, msg)     ((void)0)
-#else
-#define CORE_UTIL_ASSERT(expr)                           \
-do {                                                     \
-    if (!(expr)) {                                       \
-        core_util_assert_internal(#expr, __FILE__, __LINE__, NULL); \
-    }                                                    \
-} while (0)
-#define CORE_UTIL_ASSERT_MSG(expr, msg)                  \
-do {                                                     \
-    if (!(expr)) {                                       \
-        core_util_assert_internal(#expr, __FILE__, __LINE__, msg); \
-    }                                                    \
-} while (0)
-
-#endif
-
-#define CORE_UTIL_RUNTIME_ERROR(...)        core_util_runtime_error_internal(__FILE__, __LINE__, __VA_ARGS__)
-
-void core_util_runtime_error_internal(const char *fname, int line, const char* fmt, ...);
-void core_util_assert_internal(const char* expr, const char *fname, int line, const char *msg);
-
-#ifdef __cplusplus
-}
-#endif
-
-#endif // #ifndef __CORE_UTIL_MBED_UTIL_H__
-
+#endif // ndef __CORE_UTIL_CORE_UTIL_H__
