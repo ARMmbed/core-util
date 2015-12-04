@@ -20,6 +20,7 @@
 
 // this file used to include the definitions now in assert.h, forward the
 // include for compatibility:
+#warning "core-util/core-util.h is deprecated: use core-util/assert.h instead"
 #include "./assert.h"
 
 #endif // ndef __CORE_UTIL_CORE_UTIL_H__
