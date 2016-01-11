@@ -21,7 +21,7 @@
 #include <stddef.h>
 #include <stdarg.h>
 
-#include "core-util/core-util.h"
+#include "core-util/assert.h"
 namespace mbed {
 namespace util {
 

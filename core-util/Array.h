@@ -22,7 +22,7 @@
 #include <stdint.h>
 #include "core-util/CriticalSectionLock.h"
 #include "core-util/PoolAllocator.h"
-#include "core-util/core-util.h"
+#include "core-util/assert.h"
 #include "ualloc/ualloc.h"
 
 namespace mbed {
@@ -254,4 +254,3 @@ private:
 } // namespace mbed
 
 #endif // #ifndef __MBED_UTIL_ARRAY_H__
-
