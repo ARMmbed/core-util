@@ -17,7 +17,7 @@
 #ifndef __CORE_UTIL_SHAREDPOINTER_H__
 #define __CORE_UTIL_SHAREDPOINTER_H__
 
-#include "core-util/core-util.h"
+#include "core-util/assert.h"
 #include "ualloc/ualloc.h"
 
 #include <stdint.h>
@@ -50,16 +50,18 @@ namespace util {
 template <class T>
 class SharedPointer {
 public:
-    /** Create empty SharedPointer not pointing to anything.
-      * Used for variable declaration.
-      */
+    /**
+     * @brief Create empty SharedPointer not pointing to anything.
+     * @details Used for variable declaration.
+     */
     SharedPointer(): pointer(NULL), counter(NULL) {
         CORE_UTIL_SHAREDPOINTER_DEBUG("SP: %p [%p: %p]\r\n", this, pointer, counter);
     }
 
-    /** Create new SharedPointer
-      * @param _pointer Pointer to take control over
-      */
+    /**
+     * @brief Create new SharedPointer
+     * @param _pointer Pointer to take control over
+     */
     SharedPointer(T* _pointer): pointer(_pointer) {
         CORE_UTIL_ASSERT(pointer);
 
@@ -74,15 +76,20 @@ public:
         CORE_UTIL_SHAREDPOINTER_DEBUG("SP: %p [%p: %p = %lu]\r\n", this, pointer, counter, *counter);
     }
 
+    /**
+     * @brief Destructor.
+     * @details Decrement reference counter and delete object if no longer pointed to.
+     */
     ~SharedPointer() {
         decrementCounter();
     }
 
-    /** Copy constructor
-      * Create new SharePointer from other SharedPointer by
-      * copying pointer to original object and pointer to counter.
-      * @param source object being copied from
-      */
+    /**
+     * @brief Copy constructor.
+     * @details Create new SharePointer from other SharedPointer by
+     *          copying pointer to original object and pointer to counter.
+     * @param source Object being copied from.
+     */
     SharedPointer(const SharedPointer& source): pointer(source.pointer), counter(source.counter) {
         // increment reference counter
         if (counter) {
@@ -92,10 +99,12 @@ public:
         CORE_UTIL_SHAREDPOINTER_DEBUG("SP&: %p = %p [%p: %p = %lu]\r\n", this, &source, pointer, counter, *counter);
     }
 
-    /** Assignment operator.
-      * Cleanup previous reference and assign new pointer and counter.
-      * @param source object being assigned
-      */
+    /**
+     * @brief Assignment operator.
+     * @details Cleanup previous reference and assign new pointer and counter.
+     * @param source Object being assigned from.
+     * @return Object being assigned.
+     */
     SharedPointer operator=(const SharedPointer& source) {
         if (this != &source) {
             // clean up by decrementing counter
@@ -116,16 +125,19 @@ public:
         return *this;
     }
 
-    /** Raw pointer accessor.
-      * Get raw pointer to object pointed to.
-      */
+    /**
+     * @brief Raw pointer accessor.
+     * @details Get raw pointer to object pointed to.
+     * @return Pointer.
+     */
     T* get() const {
         return pointer;
     }
 
-    /** Reference count accessor.
-      * Return reference count.
-      */
+    /**
+     * @brief Reference count accessor.
+     * @return Reference count.
+     */
     uint32_t use_count() const {
         if (counter) {
             return *counter;
@@ -134,26 +146,30 @@ public:
         }
     }
 
-    /** Dereference object operator.
-      * Override to return the object pointed to.
-      */
+    /**
+     * @brief Dereference object operator.
+     * @details Override to return the object pointed to.
+     */
     T& operator*() const {
         CORE_UTIL_ASSERT(pointer);
 
         return *pointer;
     }
 
-    /** Dereference object member operator.
-      * Override to return return member in object pointed to.
-      */
+    /**
+     * @brief Dereference object member operator.
+     * @details Override to return return member in object pointed to.
+     */
     T* operator->() const {
         CORE_UTIL_ASSERT(pointer);
 
         return pointer;
     }
 
-    /** Boolean conversion operator.
-      */
+    /**
+     * @brief Boolean conversion operator.
+     * @return Whether or not the pointer is NULL.
+     */
     operator bool() const {
         CORE_UTIL_SHAREDPOINTER_DEBUG("bool: %p\r\n", pointer);
 
@@ -161,15 +177,18 @@ public:
     }
 
 private:
-    /** Get pointer to reference counter.
-      */
+    /**
+     * @brief Get pointer to reference counter.
+     * @return Pointer to reference counter.
+     */
     uint32_t* getCounter() const {
         return counter;
     }
 
-    /** Decrement reference counter.
-      * If count reaches zero, free counter and delete object pointed to.
-      */
+    /**
+     * @brief Decrement reference counter.
+     * @details If count reaches zero, free counter and delete object pointed to.
+     */
     void decrementCounter() {
         if (counter) {
             if (*counter == 1) {
