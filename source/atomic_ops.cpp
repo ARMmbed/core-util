@@ -16,6 +16,7 @@
  */
 
 #include "core-util/atomic_ops.h"
+#include "cmsis.h"
 
 namespace mbed {
 namespace util {
@@ -25,8 +26,8 @@ namespace util {
  * corresponding to the byte, half-word, and word variants of the instructions.
  */
 #if (__CORTEX_M >= 0x03)
-template <>
-bool atomic_cas<uint8_t>(uint8_t *ptr, uint8_t *expectedCurrentValue, uint8_t desiredValue)
+
+bool atomic_cas(uint8_t *ptr, uint8_t *expectedCurrentValue, uint8_t desiredValue)
 {
     uint8_t currentValue = __LDREXB(ptr);
     if (currentValue != *expectedCurrentValue) {
@@ -38,8 +39,7 @@ bool atomic_cas<uint8_t>(uint8_t *ptr, uint8_t *expectedCurrentValue, uint8_t de
     return !__STREXB(desiredValue, ptr);
 }
 
-template<>
-bool atomic_cas<uint16_t>(uint16_t *ptr, uint16_t *expectedCurrentValue, uint16_t desiredValue)
+bool atomic_cas(uint16_t *ptr, uint16_t *expectedCurrentValue, uint16_t desiredValue)
 {
     uint16_t currentValue = __LDREXH(ptr);
     if (currentValue != *expectedCurrentValue) {
@@ -51,8 +51,7 @@ bool atomic_cas<uint16_t>(uint16_t *ptr, uint16_t *expectedCurrentValue, uint16_
     return !__STREXH(desiredValue, ptr);
 }
 
-template<>
-bool atomic_cas<uint32_t>(uint32_t *ptr, uint32_t *expectedCurrentValue, uint32_t desiredValue)
+bool atomic_cas(uint32_t *ptr, uint32_t *expectedCurrentValue, uint32_t desiredValue)
 {
     uint32_t currentValue = __LDREXW(ptr);
     if (currentValue != *expectedCurrentValue) {
@@ -63,7 +62,56 @@ bool atomic_cas<uint32_t>(uint32_t *ptr, uint32_t *expectedCurrentValue, uint32_
 
     return !__STREXW(desiredValue, ptr);
 }
-#endif /* #if (__CORTEX_M >= 0x03) */
+
+uint32_t atomic_incr(uint32_t *valuePtr, uint32_t delta)
+{
+    uint32_t newValue;
+    do {
+        newValue = __LDREXW(valuePtr) + delta;
+    } while (__STREXW(newValue, valuePtr));
+    return newValue;
+}
+uint16_t atomic_incr(uint16_t *valuePtr, uint16_t delta)
+{
+    uint16_t newValue;
+    do {
+        newValue = __LDREXH(valuePtr) + delta;
+    } while (__STREXH(newValue, valuePtr));
+    return newValue;
+}
+uint8_t atomic_incr(uint8_t *valuePtr, uint8_t delta) {
+    uint8_t newValue;
+    do {
+        newValue = __LDREXB(valuePtr) + delta;
+    } while (__STREXB(newValue, valuePtr));
+    return newValue;
+}
+
+uint32_t atomic_decr(uint32_t *valuePtr, uint32_t delta)
+{
+    uint32_t newValue;
+    do {
+        newValue = __LDREXW(valuePtr) - delta;
+    } while (__STREXW(newValue, valuePtr));
+    return newValue;
+}
+uint16_t atomic_decr(uint16_t *valuePtr, uint16_t delta)
+{
+    uint16_t newValue;
+    do {
+        newValue = __LDREXH(valuePtr) - delta;
+    } while (__STREXH(newValue, valuePtr));
+    return newValue;
+}
+uint8_t atomic_decr(uint8_t *valuePtr, uint8_t delta)
+{
+    uint8_t newValue;
+    do {
+        newValue = __LDREXB(valuePtr) - delta;
+    } while (__STREXB(newValue, valuePtr));
+    return newValue;
+}
+#endif
 
 } // namespace util
 } // namespace mbed

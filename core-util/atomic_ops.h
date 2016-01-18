@@ -18,9 +18,6 @@
 #ifndef __MBED_UTIL_ATOMIC_OPS_H__
 #define __MBED_UTIL_ATOMIC_OPS_H__
 
-#include <stdint.h>
-#include "core-util/CriticalSectionLock.h"
-
 namespace mbed {
 namespace util {
 
@@ -82,22 +79,7 @@ namespace util {
  * than the word-size.
  */
 template<typename T>
-bool atomic_cas(T *ptr, T *expectedCurrentValue, T desiredValue)
-{
-    bool rc = true;
-
-    CriticalSectionLock lock;
-
-    T currentValue = *ptr;
-    if (currentValue == *expectedCurrentValue) {
-        *ptr = desiredValue;
-    } else {
-        *expectedCurrentValue = currentValue;
-        rc = false;
-    }
-
-    return rc;
-}
+bool atomic_cas(T *ptr, T *expectedCurrentValue, T desiredValue);
 
 /**
  * Atomic increment.
@@ -105,16 +87,8 @@ bool atomic_cas(T *ptr, T *expectedCurrentValue, T desiredValue)
  * @param  delta    The amount being incremented.
  * @return          The new incremented value.
  */
-template<typename T> T atomic_incr(T *valuePtr, T delta)
-{
-    T oldValue = *valuePtr;
-    while (true) {
-        const T newValue = oldValue + delta;
-        if (atomic_cas(valuePtr, &oldValue, newValue)) {
-            return newValue;
-        }
-    }
-}
+template<typename T>
+T atomic_incr(T *valuePtr, T delta);
 
 /**
  * Atomic decrement.
@@ -122,18 +96,12 @@ template<typename T> T atomic_incr(T *valuePtr, T delta)
  * @param  delta    The amount being decremented.
  * @return          The new decremented value.
  */
-template<typename T> T atomic_decr(T *valuePtr, T delta)
-{
-    T oldValue = *valuePtr;
-    while (true) {
-        const T newValue = oldValue - delta;
-        if (atomic_cas(valuePtr, &oldValue, newValue)) {
-            return newValue;
-        }
-    }
-}
+template<typename T>
+T atomic_decr(T *valuePtr, T delta);
 
 } // namespace util
 } // namespace mbed
+
+#include "detail/atomic_ops_detail.hpp"
 
 #endif // #ifndef __MBED_UTIL_ATOMIC_OPS_H__
