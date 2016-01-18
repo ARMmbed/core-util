@@ -44,6 +44,10 @@ public:
         return ((_object == other._object) && (memcmp(_member, other._member, sizeof(_member)) == 0));
     }
 
+    bool operator!=(const FunctionPointerBase& other) const {
+        return !(*this == other);
+    }
+
     /**
      * Clears the current function pointer assignment
      * After clear(), this instance will point to nothing (NULL)
