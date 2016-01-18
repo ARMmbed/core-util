@@ -79,7 +79,22 @@ namespace util {
  * than the word-size.
  */
 template<typename T>
-bool atomic_cas(T *ptr, T *expectedCurrentValue, T desiredValue);
+bool atomic_cas(T *ptr, T *expectedCurrentValue, T desiredValue)
+{
+    bool rc = true;
+
+    CriticalSectionLock lock;
+
+    T currentValue = *ptr;
+    if (currentValue == *expectedCurrentValue) {
+        *ptr = desiredValue;
+    } else {
+        *expectedCurrentValue = currentValue;
+        rc = false;
+    }
+
+    return rc;
+}
 
 /**
  * Atomic increment.
@@ -88,8 +103,16 @@ bool atomic_cas(T *ptr, T *expectedCurrentValue, T desiredValue);
  * @return          The new incremented value.
  */
 template<typename T>
-T atomic_incr(T *valuePtr, T delta);
-
+T atomic_incr(T *valuePtr, T delta)
+{
+    T oldValue = *valuePtr;
+    while (true) {
+        const T newValue = oldValue + delta;
+        if (atomic_cas(valuePtr, &oldValue, newValue)) {
+            return newValue;
+        }
+    }
+}
 /**
  * Atomic decrement.
  * @param  valuePtr Target memory location being decremented.
@@ -97,11 +120,28 @@ T atomic_incr(T *valuePtr, T delta);
  * @return          The new decremented value.
  */
 template<typename T>
-T atomic_decr(T *valuePtr, T delta);
+T atomic_decr(T *valuePtr, T delta)
+{
+    T oldValue = *valuePtr;
+    while (true) {
+        const T newValue = oldValue - delta;
+        if (atomic_cas(valuePtr, &oldValue, newValue)) {
+            return newValue;
+        }
+    }
+}
+
+/* For ARMv7-M and above, we use the load/store-exclusive instructions to
+ * implement atomic_cas, so we provide three template specializations
+ * corresponding to the byte, half-word, and word variants of the instructions.
+ */
+#if (__CORTEX_M >= 0x03)
+bool atomic_cas(uint8_t *ptr, uint8_t *expectedCurrentValue, uint8_t desiredValue);
+bool atomic_cas(uint16_t *ptr, uint16_t *expectedCurrentValue, uint16_t desiredValue);
+bool atomic_cas(uint32_t *ptr, uint32_t *expectedCurrentValue, uint32_t desiredValue);
+#endif /* #if (__CORTEX_M >= 0x03) */
 
 } // namespace util
 } // namespace mbed
-
-#include "detail/atomic_ops_detail.hpp"
 
 #endif // #ifndef __MBED_UTIL_ATOMIC_OPS_H__
