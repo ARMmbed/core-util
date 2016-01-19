@@ -65,6 +65,63 @@ bool atomic_cas(uint32_t *ptr, uint32_t *expectedCurrentValue, uint32_t desiredV
 
     return !__STREXW(desiredValue, ptr);
 }
+
+template<>
+uint8_t atomic_incr(uint8_t * valuePtr, uint8_t delta)
+{
+    uint8_t newValue;
+    do {
+        newValue = __LDREXB(valuePtr) + delta;
+    } while (__STREXB(newValue, valuePtr));
+    return newValue;
+}
+template<>
+uint16_t atomic_incr(uint16_t * valuePtr, uint16_t delta)
+{
+    uint16_t newValue;
+    do {
+        newValue = __LDREXH(valuePtr) + delta;
+    } while (__STREXH(newValue, valuePtr));
+    return newValue;
+}
+template<>
+uint32_t atomic_incr(uint32_t * valuePtr, uint32_t delta)
+{
+    uint32_t newValue;
+    do {
+        newValue = __LDREXW(valuePtr) + delta;
+    } while (__STREXW(newValue, valuePtr));
+    return newValue;
+}
+
+template<>
+uint8_t atomic_decr(uint8_t * valuePtr, uint8_t delta)
+{
+    uint8_t newValue;
+    do {
+        newValue = __LDREXB(valuePtr) - delta;
+    } while (__STREXB(newValue, valuePtr));
+    return newValue;
+}
+template<>
+uint16_t atomic_decr(uint16_t * valuePtr, uint16_t delta)
+{
+    uint16_t newValue;
+    do {
+        newValue = __LDREXH(valuePtr) - delta;
+    } while (__STREXH(newValue, valuePtr));
+    return newValue;
+}
+
+template<>
+uint32_t atomic_decr(uint32_t * valuePtr, uint32_t delta)
+{
+    uint32_t newValue;
+    do {
+        newValue = __LDREXW(valuePtr) - delta;
+    } while (__STREXW(newValue, valuePtr));
+    return newValue;}
+
 #endif /* #if (__CORTEX_M >= 0x03) */
 
 } // namespace util
