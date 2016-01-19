@@ -105,7 +105,8 @@ bool atomic_cas(T *ptr, T *expectedCurrentValue, T desiredValue)
  * @param  delta    The amount being incremented.
  * @return          The new incremented value.
  */
-template<typename T> T atomic_incr(T *valuePtr, T delta)
+template<typename T>
+T atomic_incr(T *valuePtr, T delta)
 {
     T oldValue = *valuePtr;
     while (true) {
@@ -115,14 +116,14 @@ template<typename T> T atomic_incr(T *valuePtr, T delta)
         }
     }
 }
-
 /**
  * Atomic decrement.
  * @param  valuePtr Target memory location being decremented.
  * @param  delta    The amount being decremented.
  * @return          The new decremented value.
  */
-template<typename T> T atomic_decr(T *valuePtr, T delta)
+template<typename T>
+T atomic_decr(T *valuePtr, T delta)
 {
     T oldValue = *valuePtr;
     while (true) {
@@ -132,6 +133,19 @@ template<typename T> T atomic_decr(T *valuePtr, T delta)
         }
     }
 }
+
+/* For ARMv7-M and above, we use the load/store-exclusive instructions to
+ * implement atomic_cas, so we provide three template specializations
+ * corresponding to the byte, half-word, and word variants of the instructions.
+ */
+#if (__CORTEX_M >= 0x03)
+template<>
+bool atomic_cas(uint8_t *ptr, uint8_t *expectedCurrentValue, uint8_t desiredValue);
+template<>
+bool atomic_cas(uint16_t *ptr, uint16_t *expectedCurrentValue, uint16_t desiredValue);
+template<>
+bool atomic_cas(uint32_t *ptr, uint32_t *expectedCurrentValue, uint32_t desiredValue);
+#endif /* #if (__CORTEX_M >= 0x03) */
 
 } // namespace util
 } // namespace mbed

@@ -16,6 +16,7 @@
  */
 
 #include "core-util/atomic_ops.h"
+#include "cmsis.h"
 
 namespace mbed {
 namespace util {
@@ -25,8 +26,9 @@ namespace util {
  * corresponding to the byte, half-word, and word variants of the instructions.
  */
 #if (__CORTEX_M >= 0x03)
-template <>
-bool atomic_cas<uint8_t>(uint8_t *ptr, uint8_t *expectedCurrentValue, uint8_t desiredValue)
+
+template<>
+bool atomic_cas(uint8_t *ptr, uint8_t *expectedCurrentValue, uint8_t desiredValue)
 {
     uint8_t currentValue = __LDREXB(ptr);
     if (currentValue != *expectedCurrentValue) {
@@ -39,7 +41,7 @@ bool atomic_cas<uint8_t>(uint8_t *ptr, uint8_t *expectedCurrentValue, uint8_t de
 }
 
 template<>
-bool atomic_cas<uint16_t>(uint16_t *ptr, uint16_t *expectedCurrentValue, uint16_t desiredValue)
+bool atomic_cas(uint16_t *ptr, uint16_t *expectedCurrentValue, uint16_t desiredValue)
 {
     uint16_t currentValue = __LDREXH(ptr);
     if (currentValue != *expectedCurrentValue) {
@@ -52,7 +54,7 @@ bool atomic_cas<uint16_t>(uint16_t *ptr, uint16_t *expectedCurrentValue, uint16_
 }
 
 template<>
-bool atomic_cas<uint32_t>(uint32_t *ptr, uint32_t *expectedCurrentValue, uint32_t desiredValue)
+bool atomic_cas(uint32_t *ptr, uint32_t *expectedCurrentValue, uint32_t desiredValue)
 {
     uint32_t currentValue = __LDREXW(ptr);
     if (currentValue != *expectedCurrentValue) {
