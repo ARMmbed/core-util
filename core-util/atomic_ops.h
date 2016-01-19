@@ -139,8 +139,11 @@ T atomic_decr(T *valuePtr, T delta)
  * corresponding to the byte, half-word, and word variants of the instructions.
  */
 #if (__CORTEX_M >= 0x03)
+template<>
 bool atomic_cas(uint8_t *ptr, uint8_t *expectedCurrentValue, uint8_t desiredValue);
+template<>
 bool atomic_cas(uint16_t *ptr, uint16_t *expectedCurrentValue, uint16_t desiredValue);
+template<>
 bool atomic_cas(uint32_t *ptr, uint32_t *expectedCurrentValue, uint32_t desiredValue);
 #endif /* #if (__CORTEX_M >= 0x03) */
 

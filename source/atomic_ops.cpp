@@ -27,6 +27,7 @@ namespace util {
  */
 #if (__CORTEX_M >= 0x03)
 
+template<>
 bool atomic_cas(uint8_t *ptr, uint8_t *expectedCurrentValue, uint8_t desiredValue)
 {
     uint8_t currentValue = __LDREXB(ptr);
@@ -39,6 +40,7 @@ bool atomic_cas(uint8_t *ptr, uint8_t *expectedCurrentValue, uint8_t desiredValu
     return !__STREXB(desiredValue, ptr);
 }
 
+template<>
 bool atomic_cas(uint16_t *ptr, uint16_t *expectedCurrentValue, uint16_t desiredValue)
 {
     uint16_t currentValue = __LDREXH(ptr);
@@ -51,6 +53,7 @@ bool atomic_cas(uint16_t *ptr, uint16_t *expectedCurrentValue, uint16_t desiredV
     return !__STREXH(desiredValue, ptr);
 }
 
+template<>
 bool atomic_cas(uint32_t *ptr, uint32_t *expectedCurrentValue, uint32_t desiredValue)
 {
     uint32_t currentValue = __LDREXW(ptr);
