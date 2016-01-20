@@ -37,7 +37,7 @@ void core_util_runtime_error_internal(const char *file, int line, const char* fo
     va_start(arg, format);
     vfprintf(stderr, format, arg);
     va_end(arg);
-    fprintf(stderr, "\r\n");
+    fprintf(stderr, "\n");
 #endif
     exit(1);
 }
@@ -48,7 +48,7 @@ void core_util_assert_internal(const char *expr, const char *file, int line, con
     fprintf(stderr, "assertation failed: %s, file: %s, line %d", expr, file, line);
     if (msg)
         fprintf(stderr, " (%s)", msg);
-    fprintf(stderr, "\r\n");
+    fprintf(stderr, "\n");
 #endif
     mbed_die();
 }
