@@ -37,6 +37,7 @@ void core_util_runtime_error_internal(const char *file, int line, const char* fo
     va_start(arg, format);
     vfprintf(stderr, format, arg);
     va_end(arg);
+    fprintf(stderr, "\r\n");
 #endif
     exit(1);
 }
