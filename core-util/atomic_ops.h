@@ -145,6 +145,20 @@ template<>
 bool atomic_cas(uint16_t *ptr, uint16_t *expectedCurrentValue, uint16_t desiredValue);
 template<>
 bool atomic_cas(uint32_t *ptr, uint32_t *expectedCurrentValue, uint32_t desiredValue);
+
+template<>
+uint8_t atomic_incr(uint8_t * valuePtr, uint8_t delta);
+template<>
+uint16_t atomic_incr(uint16_t * valuePtr, uint16_t delta);
+template<>
+uint32_t atomic_incr(uint32_t * valuePtr, uint32_t delta);
+
+template<>
+uint8_t atomic_decr(uint8_t * valuePtr, uint8_t delta);
+template<>
+uint16_t atomic_decr(uint16_t * valuePtr, uint16_t delta);
+template<>
+uint32_t atomic_decr(uint32_t * valuePtr, uint32_t delta);
 #endif /* #if (__CORTEX_M >= 0x03) */
 
 } // namespace util
