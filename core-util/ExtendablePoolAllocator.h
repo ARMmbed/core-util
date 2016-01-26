@@ -97,8 +97,10 @@ private:
     UAllocTraits_t _alloc_traits;
     unsigned _alignment;
 
-    ExtendablePoolAllocator(const ExtendablePoolAllocator&);
-    ExtendablePoolAllocator& operator =(const ExtendablePoolAllocator&);
+    ExtendablePoolAllocator(const ExtendablePoolAllocator&) = delete;
+    ExtendablePoolAllocator(ExtendablePoolAllocator&&) = delete;
+    ExtendablePoolAllocator& operator =(const ExtendablePoolAllocator&) = delete;
+    ExtendablePoolAllocator& operator =(ExtendablePoolAllocator&&) = delete;
 };
 
 } // namespace util

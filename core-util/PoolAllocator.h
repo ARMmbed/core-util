@@ -95,8 +95,10 @@ private:
     void *_start, *_free_block, *_end;
     size_t _element_size;
 
-    PoolAllocator(const PoolAllocator&);
-    PoolAllocator& operator =(const PoolAllocator&);
+    PoolAllocator(const PoolAllocator&) = delete;
+    PoolAllocator(PoolAllocator&&) = delete;
+    PoolAllocator& operator =(const PoolAllocator&) = delete;
+    PoolAllocator& operator =(PoolAllocator&&) = delete;
 };
 
 } // namespace util

@@ -249,8 +249,10 @@ private:
     volatile unsigned _capacity, _elements;
     unsigned _alignment;
 
-    Array(const Array&);
-    Array& operator =(const Array&);
+    Array(const Array&) = delete;
+    Array(Array&&) = delete;
+    Array& operator =(const Array&) = delete;
+    Array& operator =(Array&&) = delete;
 };
 
 } // namespace util
