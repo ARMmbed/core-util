@@ -248,6 +248,9 @@ private:
     size_t _element_size, _grow_capacity;
     volatile unsigned _capacity, _elements;
     unsigned _alignment;
+
+    Array(const Array&);
+    Array& operator =(const Array&);
 };
 
 } // namespace util

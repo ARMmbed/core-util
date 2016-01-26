@@ -277,6 +277,9 @@ private:
     Array<T> _array;
     Comparator _comparator;
     volatile size_t _elements;
+
+    BinaryHeap(const BinaryHeap&);
+    BinaryHeap& operator =(const BinaryHeap&);
 };
 
 } // namespace util

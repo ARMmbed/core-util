@@ -94,6 +94,9 @@ private:
 
     void *_start, *_free_block, *_end;
     size_t _element_size;
+
+    PoolAllocator(const PoolAllocator&);
+    PoolAllocator& operator =(const PoolAllocator&);
 };
 
 } // namespace util

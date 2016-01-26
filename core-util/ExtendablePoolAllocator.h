@@ -96,6 +96,9 @@ private:
     size_t _element_size, _new_pool_elements;
     UAllocTraits_t _alloc_traits;
     unsigned _alignment;
+
+    ExtendablePoolAllocator(const ExtendablePoolAllocator&);
+    ExtendablePoolAllocator& operator =(const ExtendablePoolAllocator&);
 };
 
 } // namespace util
