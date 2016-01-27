@@ -47,6 +47,12 @@ public:
       */
     PoolAllocator(void *start, size_t elements, size_t element_size, unsigned alignment = MBED_UTIL_POOL_ALLOC_DEFAULT_ALIGN);
 
+    /* Forbid copy and assignment */
+    PoolAllocator(const PoolAllocator&) = delete;
+    PoolAllocator(PoolAllocator&&) = delete;
+    PoolAllocator& operator =(const PoolAllocator&) = delete;
+    PoolAllocator& operator =(PoolAllocator&&) = delete;
+
     /** Allocate a new element from the pool
      * @returns the address of the new element or NULL for error
      */

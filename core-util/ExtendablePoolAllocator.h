@@ -41,6 +41,12 @@ public:
       */
     ExtendablePoolAllocator();
 
+    /* Forbid copy and assignment */
+    ExtendablePoolAllocator(const ExtendablePoolAllocator&) = delete;
+    ExtendablePoolAllocator(ExtendablePoolAllocator&&) = delete;
+    ExtendablePoolAllocator& operator =(const ExtendablePoolAllocator&) = delete;
+    ExtendablePoolAllocator& operator =(ExtendablePoolAllocator&&) = delete;
+
     /** Destructor. It will automatically free all allocated memory
       */
     ~ExtendablePoolAllocator();
