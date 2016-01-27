@@ -96,6 +96,12 @@ public:
     BinaryHeap(const Comparator& comparator = Comparator()): _array(), _comparator(comparator) {
     }
 
+    /* Forbid copy and assignment */
+    BinaryHeap(const BinaryHeap&) = delete;
+    BinaryHeap(BinaryHeap&&) = delete;
+    BinaryHeap& operator =(const BinaryHeap&) = delete;
+    BinaryHeap& operator =(BinaryHeap&&) = delete;
+
     /** Initialize the heap
       * @param initial_capacity initial capacity of the heap
       * @param grow_capacity number of elements to add when the heap's capacity is exceeded
@@ -277,9 +283,6 @@ private:
     Array<T> _array;
     Comparator _comparator;
     volatile size_t _elements;
-
-    BinaryHeap(const BinaryHeap&);
-    BinaryHeap& operator =(const BinaryHeap&);
 };
 
 } // namespace util

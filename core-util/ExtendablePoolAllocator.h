@@ -41,6 +41,12 @@ public:
       */
     ExtendablePoolAllocator();
 
+    /* Forbid copy and assignment */
+    ExtendablePoolAllocator(const ExtendablePoolAllocator&) = delete;
+    ExtendablePoolAllocator(ExtendablePoolAllocator&&) = delete;
+    ExtendablePoolAllocator& operator =(const ExtendablePoolAllocator&) = delete;
+    ExtendablePoolAllocator& operator =(ExtendablePoolAllocator&&) = delete;
+
     /** Destructor. It will automatically free all allocated memory
       */
     ~ExtendablePoolAllocator();
@@ -96,11 +102,6 @@ private:
     size_t _element_size, _new_pool_elements;
     UAllocTraits_t _alloc_traits;
     unsigned _alignment;
-
-    ExtendablePoolAllocator(const ExtendablePoolAllocator&) = delete;
-    ExtendablePoolAllocator(ExtendablePoolAllocator&&) = delete;
-    ExtendablePoolAllocator& operator =(const ExtendablePoolAllocator&) = delete;
-    ExtendablePoolAllocator& operator =(ExtendablePoolAllocator&&) = delete;
 };
 
 } // namespace util

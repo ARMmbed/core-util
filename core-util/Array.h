@@ -47,6 +47,12 @@ public:
     Array(): _head(NULL) {
     }
 
+    /* Forbid copy and assignment */
+    Array(const Array&) = delete;
+    Array(Array&&) = delete;
+    Array& operator =(const Array&) = delete;
+    Array& operator =(Array&&) = delete;
+
     ~Array() {
         // We have copies of elements of type T in our array, so destroy them first
         for (unsigned i = 0; i < _elements; i ++) {
@@ -248,11 +254,6 @@ private:
     size_t _element_size, _grow_capacity;
     volatile unsigned _capacity, _elements;
     unsigned _alignment;
-
-    Array(const Array&) = delete;
-    Array(Array&&) = delete;
-    Array& operator =(const Array&) = delete;
-    Array& operator =(Array&&) = delete;
 };
 
 } // namespace util
