@@ -25,6 +25,7 @@
 #include "core-util/assert.h"
 #include "ualloc/ualloc.h"
 
+
 namespace mbed {
 namespace util {
 
@@ -44,8 +45,7 @@ class Array {
 public:
     /** Create a new array
       */
-    Array(): _head(NULL) {
-    }
+    Array() {}
 
     /* Forbid copy and assignment */
     Array(const Array&) = delete;
@@ -131,10 +131,18 @@ public:
     /** Adds an element at the end of the array
       * If there's not enough memory for a new element, a new zone will be allocated
       * @param new_element element to add
-      * @returns true if the element was added, false otherwise (out of memory)
+      * @returns true if the element was added, false otherwise (out of memory/uninitialised)
       */
     bool push_back(const T& new_element) {
         unsigned idx = _elements, prev_capacity = _capacity;
+
+        // element_size is calculated in the init method, thus this can be tested to determine
+        // whether or not init has been called previously.
+        if (_element_size == 0){
+            // Init function has not been invoked thus it is illegal to add an element
+            return false;
+        }
+
         if (_elements == _capacity) {
             if (_grow_capacity == 0) { // can we grow?
                 return false;
@@ -181,7 +189,6 @@ public:
     unsigned get_num_zones() const {
         unsigned cnt = 0;
         array_link *crt = _head;
-
         while (crt != NULL) {
             cnt ++;
             crt = crt->prev;
@@ -249,11 +256,11 @@ private:
         }
     }
 
-    array_link *volatile _head;
-    UAllocTraits_t _alloc_traits;
-    size_t _element_size, _grow_capacity;
-    volatile unsigned _capacity, _elements;
-    unsigned _alignment;
+    array_link *volatile _head = NULL;
+    UAllocTraits_t _alloc_traits = {0};
+    size_t _element_size = 0, _grow_capacity = 0;
+    volatile unsigned _capacity = 0, _elements = 0;
+    unsigned _alignment = MBED_UTIL_POOL_ALLOC_DEFAULT_ALIGN;
 };
 
 } // namespace util
