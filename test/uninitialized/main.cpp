@@ -35,11 +35,6 @@ void app_start(int, char*[])
         MBED_HOSTTEST_START("UNINITIALIZED_SECTION_TEST");
         MBED_HOSTTEST_RESULT(false);
     } else if (g_state != TEST_MANUAL_INIT) {
-        MBED_HOSTTEST_TIMEOUT(5);
-        MBED_HOSTTEST_SELECT(default);
-        MBED_HOSTTEST_DESCRIPTION(uninitialized section);
-        MBED_HOSTTEST_START("UNINITIALIZED_SECTION_TEST");
-
         /* First or subsequent runs: If this is the first run, initialize the
          * state and reset. If this code is run again after the first run it
          * means the state is not kept across reboots. Eventually, the test will
@@ -50,6 +45,10 @@ void app_start(int, char*[])
         /* Second run: The data was correctly initialized and kept across a
          * system reset. */
         g_state = 0;
+        MBED_HOSTTEST_TIMEOUT(5);
+        MBED_HOSTTEST_SELECT(default);
+        MBED_HOSTTEST_DESCRIPTION(uninitialized section);
+        MBED_HOSTTEST_START("UNINITIALIZED_SECTION_TEST");
         MBED_HOSTTEST_RESULT(true);
     }
 
