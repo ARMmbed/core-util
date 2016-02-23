@@ -17,6 +17,8 @@
 #include "core-util/atomic_ops.h"
 #include "core-util/sbrk.h"
 
+#include <stdlib.h>
+
 void * volatile mbed_krbs_ptr     = MBED_KRBS_START;
 void * volatile mbed_sbrk_ptr     = MBED_SBRK_START;
 volatile ptrdiff_t mbed_sbrk_diff = MBED_HEAP_SIZE;
@@ -27,13 +29,15 @@ void * mbed_sbrk(ptrdiff_t size)
         return (void *) mbed_sbrk_ptr;
     }
 
-    ptrdiff_t size_internal = size;
-    // Minimum increment only applies to positive sbrks
-    if (size_internal > 0) {
-        if ((uintptr_t)size_internal < SBRK_INC_MIN) {
-                size_internal = SBRK_INC_MIN;
-        }
-        size_internal = ( size_internal + SBRK_ALIGN - 1) & ~(SBRK_ALIGN - 1);
+    // align absolute size requested
+    ptrdiff_t size_internal = abs(size);
+    if ((uintptr_t)size_internal < SBRK_INC_MIN) {
+            size_internal = SBRK_INC_MIN;
+    }
+    size_internal = ( size_internal + SBRK_ALIGN - 1) & ~(SBRK_ALIGN - 1);
+    // it's min sized plus aligned, assign back the sign
+    if (size < 0) {
+        size_internal = -size_internal;
     }
 
     /* Decrement mbed_sbrk_diff by the size being allocated. */
