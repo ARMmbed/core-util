@@ -14,11 +14,14 @@
  * limitations under the License.
  */
 
+#include "greentea-client/test_env.h"
 #include "mbed-drivers/mbed.h"
-#include "mbed-drivers/test_env.h"
+#include "unity/unity.h"
+#include "utest/utest.h"
 #include "core-util/Event.h"
 #include <stdio.h>
 
+using namespace utest::v1;
 using namespace mbed::util;
 
 /******************************************************************************
@@ -236,6 +239,7 @@ private:
 };
 
 static void test_funcs_nontca() {
+    {
     printf("\r\n********** Starting test_funcs_nontca **********\r\n");
 
     FunctionPointer1<void, MyArg> fp1(sa_ntc);
@@ -254,6 +258,8 @@ static void test_funcs_nontca() {
     FunctionPointer1<void, MyArg> fp3(pDerived, &ABase::print_virtual_arg);
     call_fp1("ptr to virtual method taking non-tc argument", fp2, MyArg("notest", 5, 8));
     call_fp1("ptr to virtual method taking non-tc argument (via base class pointer)", fp2, MyArg("notest", 5, 8));
+    }
+    TEST_ASSERT_TRUE(MyArg::instcount == 0);
 }
 
 /******************************************************************************
@@ -262,6 +268,7 @@ static void test_funcs_nontca() {
  *****************************************************************************/
 
 static void test_array_of_events() {
+    {
     printf("\r\n********** Starting test_array_of_events **********\r\n");
     const char* testmsg1 = "Test message 1";
     const char* testmsg2 = "Test message 2";
@@ -280,6 +287,8 @@ static void test_array_of_events() {
     for (unsigned i = 0; i < sizeof(events)/sizeof(events[0]); i ++) {
         events[i].call();
     }
+    }
+    TEST_ASSERT_TRUE(MyArg::instcount == 0);
 }
 
 /******************************************************************************
@@ -300,6 +309,7 @@ static void swap_events_using_cc(Event &e1, Event &e2) {
 }
 
 static void test_event_assignment_and_swap() {
+    {
     printf("\r\n********** Starting test_event_assignment_and_swap **********\r\n");
     ADerived aderived(10, 10);
     FunctionPointer1<void, const char*> fp_sa_tc1(sa_func_1);
@@ -342,32 +352,31 @@ static void test_event_assignment_and_swap() {
     call_event("e1", e1);
     call_event("e2", e2);
     call_event("e3", e3);
+    }
+    TEST_ASSERT_TRUE(MyArg::instcount == 0);
 }
 
-/******************************************************************************
- * Entry point
- *****************************************************************************/
+static status_t test_setup(const size_t number_of_cases) {
+    GREENTEA_SETUP(10, "default_auto");
 
-void runTest(void)
-{
-    MBED_HOSTTEST_TIMEOUT(10);
-    MBED_HOSTTEST_SELECT(default_auto);
-    MBED_HOSTTEST_DESCRIPTION(EventHandler test);
-    MBED_HOSTTEST_START("EvenHandler_1");
-
-    printf("========== Starting event handler test ==========\r\n");
-    test_standalone_funcs();
-    test_class_funcs_tca();
-    test_funcs_nontca();
-    test_array_of_events();
-    test_event_assignment_and_swap();
-
-    printf ("Final MyArg instance count (should be 0): %d\r\n", MyArg::instcount);
-    printf ("\r\nTest Complete\r\n");
-    MBED_HOSTTEST_RESULT(MyArg::instcount == 0);
+    return greentea_test_setup_handler(number_of_cases);
 }
 
-void app_start(int, char* [])
-{
-    minar::Scheduler::postCallback(&runTest);
+status_t greentea_failure_handler(const Case *const source, const failure_t reason) {
+    greentea_case_failure_abort_handler(source, reason);
+    return STATUS_CONTINUE;
+}
+
+static Case cases[] = {
+    Case("EventHandler  - test_standalone_funcs", test_standalone_funcs, greentea_failure_handler),
+    Case("EventHandler  - test_class_funcs_tca", test_class_funcs_tca, greentea_failure_handler),
+    Case("EventHandler  - test_funcs_nontca", test_funcs_nontca, greentea_failure_handler),
+    Case("EventHandler  - test_array_of_events", test_array_of_events, greentea_failure_handler),
+    Case("EventHandler  - test_event_assignment_and_swap", test_event_assignment_and_swap, greentea_failure_handler)
+};
+
+static Specification specification(test_setup, cases, greentea_test_teardown_handler);
+
+void app_start(int, char**) {
+    Harness::run(specification);
 }

@@ -16,7 +16,8 @@
  */
 #include <stdint.h>
 #include "cmsis-core/core_generic.h"
-#include "mbed-drivers/test_env.h"
+#include "greentea-client/test_env.h"
+#include "mbed-drivers/mbed.h"
 #include "core-util/uninitialized.h"
 
 #define TEST_C_INIT      0xDEADBEEFUL
@@ -29,16 +30,10 @@ void app_start(int, char*[])
     if (g_state == TEST_C_INIT) {
         /* First run: Check that the g_state does *not* hold the initialized
          * data. */
-        MBED_HOSTTEST_TIMEOUT(5);
-        MBED_HOSTTEST_SELECT(default);
-        MBED_HOSTTEST_DESCRIPTION(uninitialized section);
-        MBED_HOSTTEST_START("UNINITIALIZED_SECTION_TEST");
-        MBED_HOSTTEST_RESULT(false);
+        GREENTEA_SETUP(5, "default_auto");
+        GREENTEA_TESTSUITE_RESULT(false);
     } else if (g_state != TEST_MANUAL_INIT) {
-        MBED_HOSTTEST_TIMEOUT(5);
-        MBED_HOSTTEST_SELECT(default);
-        MBED_HOSTTEST_DESCRIPTION(uninitialized section);
-        MBED_HOSTTEST_START("UNINITIALIZED_SECTION_TEST");
+        GREENTEA_SETUP(5, "default_auto");
 
         /* First or subsequent runs: If this is the first run, initialize the
          * state and reset. If this code is run again after the first run it
@@ -50,7 +45,7 @@ void app_start(int, char*[])
         /* Second run: The data was correctly initialized and kept across a
          * system reset. */
         g_state = 0;
-        MBED_HOSTTEST_RESULT(true);
+        GREENTEA_TESTSUITE_RESULT(true);
     }
 
     return;

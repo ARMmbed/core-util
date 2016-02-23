@@ -16,47 +16,45 @@
  */
 
 #include "core-util/PoolAllocator.h"
-#include "mbed-drivers/test_env.h"
+#include "greentea-client/test_env.h"
+#include "unity/unity.h"
+#include "utest/utest.h"
 #include <stdio.h>
 #include <stdlib.h>
 
+using namespace utest::v1;
 using namespace mbed::util;
 
-void app_start(int, char**) {
-    MBED_HOSTTEST_TIMEOUT(5);
-    MBED_HOSTTEST_SELECT(default);
-    MBED_HOSTTEST_DESCRIPTION(mbed-util pool allocator test);
-    MBED_HOSTTEST_START("MBED_UTIL_POOL_ALLOCATOR_TEST");
-
+void test_pool_allocator() {
     // Allocate initial space for the pool
     const size_t elements = 10, element_size = 6;
     const size_t aligned_size = (element_size + MBED_UTIL_POOL_ALLOC_DEFAULT_ALIGN - 1) & ~(MBED_UTIL_POOL_ALLOC_DEFAULT_ALIGN - 1);
     size_t pool_size = PoolAllocator::get_pool_size(elements, element_size);
-    MBED_HOSTTEST_ASSERT(pool_size == elements * aligned_size);
+    TEST_ASSERT_TRUE(pool_size == elements * aligned_size);
 
     void *start = malloc(pool_size);
-    MBED_HOSTTEST_ASSERT(start != NULL);
+    TEST_ASSERT_TRUE(start != NULL);
     PoolAllocator allocator(start, elements, element_size);
 
     // Allocate all elements, checking for proper alignment and spacing
     void *p, *prev, *first;
     for (size_t i = 0; i < elements; i ++) {
         p = allocator.alloc();
-        MBED_HOSTTEST_ASSERT(p != NULL);
+        TEST_ASSERT_TRUE(p != NULL);
         // Check alignment
-        MBED_HOSTTEST_ASSERT(((uint32_t)p & (MBED_UTIL_POOL_ALLOC_DEFAULT_ALIGN - 1)) == 0);
+        TEST_ASSERT_TRUE(((uint32_t)p & (MBED_UTIL_POOL_ALLOC_DEFAULT_ALIGN - 1)) == 0);
         // Check spacing
         if (i > 0) {
-            MBED_HOSTTEST_ASSERT(((uint32_t)p - (uint32_t)prev) == aligned_size);
+            TEST_ASSERT_TRUE(((uint32_t)p - (uint32_t)prev) == aligned_size);
         } else {
             first = p;
-            MBED_HOSTTEST_ASSERT(p == start);
+            TEST_ASSERT_TRUE(p == start);
         }
         prev = p;
     }
 
     // No more space in the pool, we should get NULL now
-    MBED_HOSTTEST_ASSERT(allocator.alloc() == NULL);
+    TEST_ASSERT_TRUE(allocator.alloc() == NULL);
 
     // Free the first element we allocated
     allocator.free(first);
@@ -64,10 +62,23 @@ void app_start(int, char**) {
     // Verify that we can allocate a single element now, and it has the same address
     // as the first element we allocated above
     p = allocator.alloc();
-    MBED_HOSTTEST_ASSERT(p == first);
+    TEST_ASSERT_TRUE(p == first);
     p = allocator.alloc();
-    MBED_HOSTTEST_ASSERT(p == NULL);
-
-    MBED_HOSTTEST_RESULT(true);
+    TEST_ASSERT_TRUE(p == NULL);
 }
 
+static status_t test_setup(const size_t number_of_cases) {
+    GREENTEA_SETUP(5, "default_auto");
+
+    return greentea_test_setup_handler(number_of_cases);
+}
+
+static Case cases[] = {
+    Case("PoolAllocator  - test_pool_allocator", test_pool_allocator)
+};
+
+static Specification specification(test_setup, cases, greentea_test_teardown_handler);
+
+void app_start(int, char**) {
+    Harness::run(specification);
+}
