@@ -21,13 +21,11 @@
 #include <stddef.h>
 #include <stdint.h>
 
-// [TODO] this should probably be 8, but at the moment our allocators are
-// aligned at 4 bytes
 // [TODO] where should the system allocator alignment be defined?
-#define MBED_UTIL_POOL_ALLOC_DEFAULT_ALIGN       4
+#define MBED_UTIL_POOL_ALLOC_DEFAULT_ALIGN       8
 // [TODO] currently, the requested alignment (in the PoolAllocator constructor) must be
 // less than or equal to MBED_UTIL_POOL_ALLOC_DEFAULT_ALIGN, which effectively limits it to
-// 4 bytes for now
+// 8 bytes for now
 
 namespace mbed {
 namespace util {

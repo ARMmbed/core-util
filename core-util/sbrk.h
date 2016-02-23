@@ -53,7 +53,7 @@
 #endif
 
 #ifndef SBRK_ALIGN
-#define SBRK_ALIGN 4U
+#define SBRK_ALIGN 8U
 #endif
 #if (SBRK_ALIGN & (SBRK_ALIGN-1))
 #error SBRK_ALIGN must be a power of 2
@@ -64,7 +64,7 @@
 #endif
 
 #ifndef KRBS_ALIGN
-#define KRBS_ALIGN 4U
+#define KRBS_ALIGN 8U
 #endif
 #if (KRBS_ALIGN & (KRBS_ALIGN-1))
 #error KRBS_ALIGN must be a power of 2
