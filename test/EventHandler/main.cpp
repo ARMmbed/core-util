@@ -259,7 +259,7 @@ static void test_funcs_nontca() {
     call_fp1("ptr to virtual method taking non-tc argument", fp2, MyArg("notest", 5, 8));
     call_fp1("ptr to virtual method taking non-tc argument (via base class pointer)", fp2, MyArg("notest", 5, 8));
     }
-    TEST_ASSERT_TRUE(MyArg::instcount == 0);
+    TEST_ASSERT_EQUAL(0, MyArg::instcount);
 }
 
 /******************************************************************************
@@ -288,7 +288,7 @@ static void test_array_of_events() {
         events[i].call();
     }
     }
-    TEST_ASSERT_TRUE(MyArg::instcount == 0);
+    TEST_ASSERT_EQUAL(0, MyArg::instcount);
 }
 
 /******************************************************************************
@@ -353,7 +353,7 @@ static void test_event_assignment_and_swap() {
     call_event("e2", e2);
     call_event("e3", e3);
     }
-    TEST_ASSERT_TRUE(MyArg::instcount == 0);
+    TEST_ASSERT_EQUAL(0, MyArg::instcount);
 }
 
 static status_t test_setup(const size_t number_of_cases) {

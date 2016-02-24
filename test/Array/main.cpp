@@ -37,37 +37,37 @@ static void test_pod() {
     for (unsigned i = 0; i < initial_capacity; i ++ ) {
         array.push_back(i);
     }
-    TEST_ASSERT_TRUE(array.get_num_elements() == initial_capacity);
+    TEST_ASSERT_EQUAL(initial_capacity, array.get_num_elements());
     for (unsigned i = 0; i < initial_capacity; i ++) {
-        TEST_ASSERT_TRUE(array[i] == i);
+        TEST_ASSERT_EQUAL(i, array[i]);
     }
-    TEST_ASSERT_TRUE(array.get_num_zones() == 1);
+    TEST_ASSERT_EQUAL(1, array.get_num_zones());
 
     // Add another element, this should trigger the creation of another zone
     array.push_back(1000);
-    TEST_ASSERT_TRUE(array.get_num_zones() == 2);
-    TEST_ASSERT_TRUE(array.get_num_elements() == initial_capacity + 1);
+    TEST_ASSERT_EQUAL(2, array.get_num_zones());
+    TEST_ASSERT_EQUAL(initial_capacity + 1, array.get_num_elements());
     // Fill the second zone too
     for (unsigned i = 1; i < grow_capacity; i ++) {
         array.push_back(1000 + i);
     }
-    TEST_ASSERT_TRUE(array.get_num_elements() == initial_capacity + grow_capacity);
+    TEST_ASSERT_EQUAL(initial_capacity + grow_capacity, array.get_num_elements());
     for (unsigned i = 0; i < grow_capacity; i ++) {
-        TEST_ASSERT_TRUE(array.at(i + initial_capacity) == 1000 + i);
+        TEST_ASSERT_EQUAL(1000 + i, array.at(i + initial_capacity));
     }
-    TEST_ASSERT_TRUE(array.get_num_zones() == 2);
+    TEST_ASSERT_EQUAL(2, array.get_num_zones());
     unsigned save_for_later = array[initial_capacity + grow_capacity - 1];
     // Add yet another element, which should result in the creation of another zone
     array.push_back(10000);
-    TEST_ASSERT_TRUE(array[initial_capacity + grow_capacity] == 10000);
-    TEST_ASSERT_TRUE(array.get_num_zones() == 3);
-    TEST_ASSERT_TRUE(array.get_num_elements() == initial_capacity + grow_capacity + 1);
+    TEST_ASSERT_EQUAL(10000, array[initial_capacity + grow_capacity]);
+    TEST_ASSERT_EQUAL(3, array.get_num_zones());
+    TEST_ASSERT_EQUAL(initial_capacity + grow_capacity + 1, array.get_num_elements());
 
     // Remove the last element
     array.pop_back();
-    TEST_ASSERT_TRUE(array.get_num_elements() == initial_capacity + grow_capacity);
-    TEST_ASSERT_TRUE(array[array.get_num_elements() - 1] == save_for_later);
-    TEST_ASSERT_TRUE(array.get_num_zones() == 3); // the array doesn't (yet?) shrink
+    TEST_ASSERT_EQUAL(initial_capacity + grow_capacity, array.get_num_elements());
+    TEST_ASSERT_EQUAL(save_for_later, array[array.get_num_elements() - 1]);
+    TEST_ASSERT_EQUAL(3, array.get_num_zones()); // the array doesn't (yet?) shrink
 
     // Simple bubble sort test illustrating moving around elements in the array
     const size_t total = initial_capacity + grow_capacity;
@@ -85,10 +85,10 @@ static void test_pod() {
         }
     }
     for (unsigned i = 0; i < total; i ++) {
-        TEST_ASSERT_TRUE(array[i] == i);
+        TEST_ASSERT_EQUAL(i, array[i]);
     }
 
-    TEST_ASSERT_TRUE(array.get_num_zones() == 3);
+    TEST_ASSERT_EQUAL(3, array.get_num_zones());
 }
 
 struct Test {
@@ -144,10 +144,10 @@ static void test_non_pod() {
     // Pop the last element from array (checks if destructor is called)
     array.pop_back();
 
-    TEST_ASSERT_TRUE(array.get_num_elements() == initial_capacity - 1);
-    TEST_ASSERT_TRUE(array.get_num_zones() == 1);
+    TEST_ASSERT_EQUAL(initial_capacity - 1, array.get_num_elements());
+    TEST_ASSERT_EQUAL(1, array.get_num_zones());
     }
-    TEST_ASSERT_TRUE(Test::inst_count == 0);
+    TEST_ASSERT_EQUAL(0, Test::inst_count);
 }
 
 static status_t test_setup(const size_t number_of_cases) {

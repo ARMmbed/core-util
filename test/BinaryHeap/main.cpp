@@ -40,7 +40,7 @@ static void test_heap(const T* data, unsigned data_size, const T* sorted_data,
         heap.insert(data[i]);
         TEST_ASSERT_TRUE(heap.is_consistent());
     }
-    TEST_ASSERT_TRUE(heap.get_num_elements() == data_size);
+    TEST_ASSERT_EQUAL(data_size, heap.get_num_elements());
 
     // Remove and check root at each step
     for (unsigned i = 0; i < data_size; i ++) {
@@ -56,7 +56,7 @@ static void test_heap(const T* data, unsigned data_size, const T* sorted_data,
         heap.insert(data[i]);
         TEST_ASSERT_TRUE(heap.is_consistent());
     }
-    TEST_ASSERT_TRUE(heap.get_num_elements() == data_size);
+    TEST_ASSERT_EQUAL(data_size, heap.get_num_elements());
 
     // And check removing
     for (unsigned i = 0; i < removed_size; i ++) {
@@ -64,7 +64,7 @@ static void test_heap(const T* data, unsigned data_size, const T* sorted_data,
         TEST_ASSERT_TRUE(heap.is_consistent());
     }
     TEST_ASSERT_TRUE(!heap.remove(not_in_heap)); // this element is not in the heap
-    TEST_ASSERT_TRUE(heap.get_num_elements() == data_size - removed_size);
+    TEST_ASSERT_EQUAL(data_size - removed_size, heap.get_num_elements());
     // Remove and check root at each step
     for (unsigned i = 0; i < data_size - removed_size; i ++) {
         T root = heap.pop_root();
@@ -72,7 +72,7 @@ static void test_heap(const T* data, unsigned data_size, const T* sorted_data,
         TEST_ASSERT_TRUE(heap.is_consistent());
     }
     TEST_ASSERT_TRUE(heap.is_empty());
-    TEST_ASSERT_TRUE(heap.get_num_elements() == 0);
+    TEST_ASSERT_EQUAL(0, heap.get_num_elements());
 }
 
 static void test_min_heap_pod() {
@@ -144,7 +144,7 @@ static void test_min_heap_non_pod() {
                    to_remove, sizeof(to_remove)/sizeof(Test), sorted_after_remove,
                    2000);
     }
-    TEST_ASSERT_TRUE(Test::inst_count == 0);
+    TEST_ASSERT_EQUAL(0, Test::inst_count);
     printf("********** Ending test_min_heap_non_pod()\r\n");
 }
 
@@ -160,7 +160,7 @@ static void test_max_heap_non_pod() {
                    to_remove, sizeof(to_remove)/sizeof(Test), sorted_after_remove,
                    2000);
     }
-    TEST_ASSERT_TRUE(Test::inst_count == 0);
+    TEST_ASSERT_EQUAL(0, Test::inst_count);
     printf("********** Ending test_max_heap_non_pod()\r\n");
 }
 

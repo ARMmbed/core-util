@@ -30,7 +30,7 @@ void test_pool_allocator() {
     const size_t elements = 10, element_size = 6;
     const size_t aligned_size = (element_size + MBED_UTIL_POOL_ALLOC_DEFAULT_ALIGN - 1) & ~(MBED_UTIL_POOL_ALLOC_DEFAULT_ALIGN - 1);
     size_t pool_size = PoolAllocator::get_pool_size(elements, element_size);
-    TEST_ASSERT_TRUE(pool_size == elements * aligned_size);
+    TEST_ASSERT_EQUAL(elements * aligned_size, pool_size);
 
     void *start = malloc(pool_size);
     TEST_ASSERT_TRUE(start != NULL);
@@ -42,19 +42,19 @@ void test_pool_allocator() {
         p = allocator.alloc();
         TEST_ASSERT_TRUE(p != NULL);
         // Check alignment
-        TEST_ASSERT_TRUE(((uint32_t)p & (MBED_UTIL_POOL_ALLOC_DEFAULT_ALIGN - 1)) == 0);
+        TEST_ASSERT_EQUAL(0, ((uint32_t)p & (MBED_UTIL_POOL_ALLOC_DEFAULT_ALIGN - 1)));
         // Check spacing
         if (i > 0) {
-            TEST_ASSERT_TRUE(((uint32_t)p - (uint32_t)prev) == aligned_size);
+            TEST_ASSERT_EQUAL(aligned_size, ((uint32_t)p - (uint32_t)prev));
         } else {
             first = p;
-            TEST_ASSERT_TRUE(p == start);
+            TEST_ASSERT_EQUAL(start, p);
         }
         prev = p;
     }
 
     // No more space in the pool, we should get NULL now
-    TEST_ASSERT_TRUE(allocator.alloc() == NULL);
+    TEST_ASSERT_EQUAL(NULL, allocator.alloc());
 
     // Free the first element we allocated
     allocator.free(first);
@@ -62,9 +62,9 @@ void test_pool_allocator() {
     // Verify that we can allocate a single element now, and it has the same address
     // as the first element we allocated above
     p = allocator.alloc();
-    TEST_ASSERT_TRUE(p == first);
+    TEST_ASSERT_EQUAL(first, p);
     p = allocator.alloc();
-    TEST_ASSERT_TRUE(p == NULL);
+    TEST_ASSERT_EQUAL(NULL, p);
 }
 
 static status_t test_setup(const size_t number_of_cases) {

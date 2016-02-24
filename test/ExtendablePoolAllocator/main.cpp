@@ -43,25 +43,25 @@ static void test_extendable_pool_allocator() {
     for (unsigned i = 0; i < initial_elements; i ++) {
         TEST_ASSERT_TRUE(check_value_and_alignment(allocator.alloc()));
     }
-    TEST_ASSERT_TRUE(allocator.get_num_pools() == 1);
+    TEST_ASSERT_EQUAL(1, allocator.get_num_pools());
 
     // Allocating just another element should add another pool
     void *p = allocator.alloc();
     TEST_ASSERT_TRUE(check_value_and_alignment(p));
-    TEST_ASSERT_TRUE(allocator.get_num_pools() == 2);
+    TEST_ASSERT_EQUAL(2, allocator.get_num_pools());
     // Fill the new pool
     for (unsigned i = 0; i < new_pool_elements - 1; i ++) {
         TEST_ASSERT_TRUE(check_value_and_alignment(allocator.alloc()));
     }
-    TEST_ASSERT_TRUE(allocator.get_num_pools() == 2);
+    TEST_ASSERT_EQUAL(2, allocator.get_num_pools());
 
     // Free one previously allocated area
     allocator.free(p);
     // And allocate again. Since there's a single free place, it should be used now
     void *newp = allocator.alloc();
     TEST_ASSERT_TRUE(check_value_and_alignment(newp));
-    TEST_ASSERT_TRUE(newp == p);
-    TEST_ASSERT_TRUE(allocator.get_num_pools() == 2);
+    TEST_ASSERT_EQUAL(p, newp);
+    TEST_ASSERT_EQUAL(2, allocator.get_num_pools());
 }
 
 static status_t test_setup(const size_t number_of_cases) {

@@ -52,36 +52,36 @@ void test_shared_pointer() {
     SharedPointer<Number> sharedptr1(ptr1);
 
     // pointers match
-    TEST_ASSERT_TRUE(sharedptr1.get() == ptr1);
+    TEST_ASSERT_EQUAL(ptr1, sharedptr1.get());
 
     // counter match
-    TEST_ASSERT_TRUE(sharedptr1.use_count() == 1);
+    TEST_ASSERT_EQUAL(1, sharedptr1.use_count());
 
     // dereferencing works
-    TEST_ASSERT_TRUE(sharedptr1->getNum() == 1);
+    TEST_ASSERT_EQUAL(1, sharedptr1->getNum());
 
     /* Test 2: copy pointer */
     {
         SharedPointer<Number> sharedptr1copy;
 
         // NULL pointer is NULL
-        TEST_ASSERT_TRUE(sharedptr1copy.get() == NULL);
-        TEST_ASSERT_TRUE(sharedptr1copy.use_count() == 0);
+        TEST_ASSERT_EQUAL(NULL, sharedptr1copy.get());
+        TEST_ASSERT_EQUAL(0, sharedptr1copy.use_count());
 
         // copy
         sharedptr1copy = sharedptr1;
 
         // raw pointer is consistent
-        TEST_ASSERT_TRUE(sharedptr1copy.get() == ptr1);
-        TEST_ASSERT_TRUE(sharedptr1copy.get() == sharedptr1.get());
+        TEST_ASSERT_EQUAL(ptr1, sharedptr1copy.get());
+        TEST_ASSERT_EQUAL(sharedptr1.get(), sharedptr1copy.get());
 
         // reference count is accurate
-        TEST_ASSERT_TRUE(sharedptr1.use_count() == 2);
-        TEST_ASSERT_TRUE(sharedptr1copy.use_count() == 2);
+        TEST_ASSERT_EQUAL(2, sharedptr1.use_count());
+        TEST_ASSERT_EQUAL(2, sharedptr1copy.use_count());
     }
 
     // sharedptr1copy is destroyed, count is decremented
-    TEST_ASSERT_TRUE(sharedptr1.use_count() == 1);
+    TEST_ASSERT_EQUAL(1, sharedptr1.use_count());
 
 
     /* Test 3: object is destroyed */
@@ -92,21 +92,21 @@ void test_shared_pointer() {
         globalFlag = true;
     }
 
-    TEST_ASSERT_TRUE(globalFlag == false);
+    TEST_ASSERT_EQUAL(false, globalFlag);
 
     /* Test 4: corner cases */
 
     // self assignment
-    TEST_ASSERT_TRUE(sharedptr1.use_count() == 1);
+    TEST_ASSERT_EQUAL(1, sharedptr1.use_count());
     sharedptr1 = sharedptr1;
-    TEST_ASSERT_TRUE(sharedptr1.use_count() == 1);
+    TEST_ASSERT_EQUAL(1, sharedptr1.use_count());
 
 
     /* Test 5: basic types */
     {
         SharedPointer<int> sharedptr3(new int);
         *sharedptr3 = 3;
-        TEST_ASSERT_TRUE(*sharedptr3 == 3);
+        TEST_ASSERT_EQUAL(3, *sharedptr3);
     }
 }
 
