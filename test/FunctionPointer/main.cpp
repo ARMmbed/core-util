@@ -41,9 +41,6 @@ void bareprint() {
 }
 
 void runTest(void) {
-    static Serial pc(USBTX, USBRX);
-    pc.baud(115200);
-
     MBED_HOSTTEST_TIMEOUT(10);
     MBED_HOSTTEST_SELECT(default_auto);
     MBED_HOSTTEST_DESCRIPTION(FunctionPointer test);
