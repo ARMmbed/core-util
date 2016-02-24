@@ -27,6 +27,10 @@
       "mbed-drivers": "~0.12.0"
     }
   },
+  "testDependencies": {
+    "unity": "^2.0.0",
+    "greentea-client": "~0.1.4"
+  },
   "scripts": {
     "testReporter": [
       "mbedgt",

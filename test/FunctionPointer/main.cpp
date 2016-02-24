@@ -14,12 +14,15 @@
  * limitations under the License.
  */
 
-#include "mbed-drivers/mbed.h"
-#include "mbed-drivers/test_env.h"
+#include "greentea-client/test_env.h"
+#include "unity/unity.h"
+#include "utest/utest.h"
 #include "core-util/FunctionPointer.h"
 #include "int_types.hpp"
 #include "lifetime.hpp"
 #include "side_effects.hpp"
+
+using namespace utest::v1;
 
 namespace {
 volatile int ebp_flag = 0;
@@ -40,15 +43,7 @@ void bareprint() {
     printf("Bare Print\r\n");
 }
 
-void runTest(void) {
-    static Serial pc(USBTX, USBRX);
-    pc.baud(115200);
-
-    MBED_HOSTTEST_TIMEOUT(10);
-    MBED_HOSTTEST_SELECT(default_auto);
-    MBED_HOSTTEST_DESCRIPTION(FunctionPointer test);
-    MBED_HOSTTEST_START("FPOINTER_1");
-
+void test_function_pointer(void) {
     VTest test;
     printf("Testing mbed FunctionPointer...\r\n");
 
@@ -71,17 +66,35 @@ void runTest(void) {
         result = result && ecp_flag;
         printf("ecp_flag = %d\r\n", ecp_flag);
     }
+
     bool iResult = testInts();
+    TEST_ASSERT_TRUE_MESSAGE(iResult, "testInts() failed");
     result = result && iResult;
+
     bool lifeResult = checkLifetime();
+    TEST_ASSERT_TRUE_MESSAGE(lifeResult, "checkLifetime() failed");
     result = result && lifeResult;
+
     bool sideEffectResult = checkSideEffects();
+    TEST_ASSERT_TRUE_MESSAGE(sideEffectResult, "checkSideEffects() failed");
     result = result && lifeResult;
 
     printf("Test Complete\r\n");
-    MBED_HOSTTEST_RESULT(result);
+    TEST_ASSERT_TRUE(result);
 }
 
-void app_start(int, char*[]) {
-    minar::Scheduler::postCallback(&runTest);
+static status_t test_setup(const size_t number_of_cases) {
+    GREENTEA_SETUP(10, "default_auto");
+
+    return greentea_test_setup_handler(number_of_cases);
+}
+
+static Case cases[] = {
+    Case("FunctionPointer  - test_function_pointer", test_function_pointer)
+};
+
+static Specification specification(test_setup, cases, greentea_test_teardown_handler);
+
+void app_start(int, char**) {
+    Harness::run(specification);
 }
