@@ -30,13 +30,14 @@ void critical_section_enter()
     uint32_t primask = __get_PRIMASK(); // get the current interrupt enabled state
     __disable_irq();
 
-    /* Save the interrupt enabled state as it was prior to any nested critical section lock use */
+    // Save the interrupt enabled state as it was prior to any nested critical section lock use
     if (!interruptEnableCounter) {
         critical_primask = primask & 0x1;
     }
 
-    // If the interruptEnableCounter overflows or we are in a nested critical section and interrupts
-    // are enabled, then something has gone badly wrong thus assert an error.
+    /* If the interruptEnableCounter overflows or we are in a nested critical section and interrupts
+       are enabled, then something has gone badly wrong thus assert an error.
+    */
 
     assert(interruptEnableCounter < UINT32_MAX);
     if (interruptEnableCounter > 0) {
@@ -56,8 +57,9 @@ void critical_section_exit()
 
         interruptEnableCounter--;
 
-        // Only re-enable interrupts if we are exiting the last of the nested critical sections and
-        // interrupts were enabled on entry to the first critical section.
+        /* Only re-enable interrupts if we are exiting the last of the nested critical sections and
+           interrupts were enabled on entry to the first critical section.
+        */
         if (!interruptEnableCounter && !critical_primask) {
             __enable_irq();
         }
