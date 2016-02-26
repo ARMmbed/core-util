@@ -25,7 +25,7 @@
 static volatile uint32_t interruptEnableCounter = 0;
 static volatile uint32_t critical_primask = 0;
 
-void critical_section_enter()
+void core_util_critical_section_enter()
 {
     uint32_t primask = __get_PRIMASK(); // get the current interrupt enabled state
     __disable_irq();
@@ -46,7 +46,7 @@ void critical_section_enter()
     interruptEnableCounter++;
 }
 
-void critical_section_exit()
+void core_util_critical_section_exit()
 {
     // If critical_section_enter has not previously been called, do nothing
     if (interruptEnableCounter) {
