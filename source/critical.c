@@ -20,7 +20,7 @@
 #include <assert.h>
 
 // Module include
-#include "mbed-util/critical.h"
+#include "core-util/critical.h"
 
 static volatile uint32_t interruptEnableCounter = 0;
 static volatile uint32_t critical_primask = 0;
