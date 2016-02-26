@@ -19,8 +19,6 @@
 #define __MBED_UTIL_CRITICAL_H__
 
 #ifdef __cplusplus
-namespace mbed {
-namespace util {
 extern "C" {
 #endif
 
@@ -52,8 +50,6 @@ void critical_section_exit();
 
 #ifdef __cplusplus
 } // extern "C"
-} // namspace util
-} // namespace mbed
 #endif
 
 
