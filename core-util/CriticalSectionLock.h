@@ -23,6 +23,7 @@
 #include "cmsis-core/core_generic.h"
 #ifdef TARGET_NORDIC
 #include "nrf_soc.h"
+#include "nrf_sdm.h"
 #endif /* #ifdef TARGET_NORDIC */
 #else  /* #ifdef TARGET_LIKE_POSIX */
 #include <assert.h>
@@ -47,11 +48,29 @@ namespace util {
   * }
   * @endcode
   */
+
 class CriticalSectionLock {
 public:
     CriticalSectionLock() {
 #ifdef TARGET_NORDIC
-        sd_nvic_critical_region_enter(&_state);
+        // get the state of exceptions for the CPU
+        _PRIMASK_state = __get_PRIMASK();
+
+        // if exceptions are not enabled, there is nothing more to do
+        if (_PRIMASK_state == 1) {
+            _use_softdevice_routine = false;
+        } else {
+            // otherwise, use soft device routine if softdevice is running or disable
+            // the irq if softdevice is not running
+            uint8_t sd_enabled;
+            if ((sd_softdevice_is_enabled(&sd_enabled) == NRF_SUCCESS) && sd_enabled == 1) {
+                _use_softdevice_routine = true;
+                sd_nvic_critical_region_enter(&_sd_state);
+            } else {
+                _use_softdevice_routine = false;
+                __disable_irq();
+            }
+        }
 #elif defined(TARGET_LIKE_POSIX)
         if (++IRQNestingDepth > 1) {
             return;
@@ -71,7 +90,11 @@ public:
 
     ~CriticalSectionLock() {
 #ifdef TARGET_NORDIC
-        sd_nvic_critical_region_exit(_state);
+        if (_use_softdevice_routine) {
+            sd_nvic_critical_region_exit(_sd_state);
+        } else {
+            __set_PRIMASK(_PRIMASK_state);
+        }
 #elif defined(TARGET_LIKE_POSIX)
         assert(IRQNestingDepth > 0);
         if (--IRQNestingDepth == 0) {
@@ -85,7 +108,11 @@ public:
 
 private:
 #ifdef TARGET_NORDIC
-    uint8_t  _state;
+    union {
+        uint32_t _PRIMASK_state;
+        uint8_t  _sd_state;
+    };
+    bool _use_softdevice_routine;
 #elif defined(TARGET_LIKE_POSIX)
     unsigned IRQNestingDepth;
     sigset_t oldSigSet;
