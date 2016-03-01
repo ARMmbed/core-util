@@ -14,6 +14,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+#ifndef TARGET_NORDIC
+
 #include <stdint.h>                  // uint32_t, UINT32_MAX
 #include <stddef.h>                  // NULL
 #include "cmsis-core/core_generic.h" //__disable_irq, __enable_irq
@@ -65,3 +68,5 @@ void core_util_critical_section_exit()
         }
     }
 }
+
+#endif // not defined(TARGET_NORDIC)
