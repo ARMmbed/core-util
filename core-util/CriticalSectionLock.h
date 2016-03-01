@@ -18,18 +18,7 @@
 #ifndef __MBED_UTIL_CRITICAL_SECTION_LOCK_H__
 #define __MBED_UTIL_CRITICAL_SECTION_LOCK_H__
 
-#include <stdint.h>
-#ifndef TARGET_LIKE_POSIX
-#include "cmsis-core/core_generic.h"
-#ifdef TARGET_NORDIC
-#include "nrf_soc.h"
-#include "nrf_sdm.h"
-#endif /* #ifdef TARGET_NORDIC */
-#else  /* #ifdef TARGET_LIKE_POSIX */
-#include <assert.h>
-#include <unistd.h>
-#include <signal.h>
-#endif /* #ifdef TARGET_LIKE_POSIX */
+#include "core-util/critical.h"
 
 namespace mbed {
 namespace util {
@@ -52,73 +41,13 @@ namespace util {
 class CriticalSectionLock {
 public:
     CriticalSectionLock() {
-#ifdef TARGET_NORDIC
-        // get the state of exceptions for the CPU
-        _PRIMASK_state = __get_PRIMASK();
-
-        // if exceptions are not enabled, there is nothing more to do
-        if (_PRIMASK_state == 1) {
-            _use_softdevice_routine = false;
-        } else {
-            // otherwise, use soft device routine if softdevice is running or disable
-            // the irq if softdevice is not running
-            uint8_t sd_enabled;
-            if ((sd_softdevice_is_enabled(&sd_enabled) == NRF_SUCCESS) && sd_enabled == 1) {
-                _use_softdevice_routine = true;
-                sd_nvic_critical_region_enter(&_sd_state);
-            } else {
-                _use_softdevice_routine = false;
-                __disable_irq();
-            }
-        }
-#elif defined(TARGET_LIKE_POSIX)
-        if (++IRQNestingDepth > 1) {
-            return;
-        }
-
-        int rc;
-        sigset_t fullSet;
-        rc = sigfillset(&fullSet);
-        assert(rc == 0);
-        rc = sigprocmask(SIG_BLOCK, &fullSet, &oldSigSet);
-        assert(rc == 0);
-#else
-        _state = __get_PRIMASK();
-        __disable_irq();
-#endif
+        core_util_critical_section_enter();
     }
 
     ~CriticalSectionLock() {
-#ifdef TARGET_NORDIC
-        if (_use_softdevice_routine) {
-            sd_nvic_critical_region_exit(_sd_state);
-        } else {
-            __set_PRIMASK(_PRIMASK_state);
-        }
-#elif defined(TARGET_LIKE_POSIX)
-        assert(IRQNestingDepth > 0);
-        if (--IRQNestingDepth == 0) {
-            int rc = sigprocmask(SIG_SETMASK, &oldSigSet, NULL);
-            assert(rc == 0);
-        }
-#else
-        __set_PRIMASK(_state);
-#endif
+        core_util_critical_section_exit();
     }
 
-private:
-#ifdef TARGET_NORDIC
-    union {
-        uint32_t _PRIMASK_state;
-        uint8_t  _sd_state;
-    };
-    bool _use_softdevice_routine;
-#elif defined(TARGET_LIKE_POSIX)
-    unsigned IRQNestingDepth;
-    sigset_t oldSigSet;
-#else
-    uint32_t _state;
-#endif
 };
 
 } // namespace util
