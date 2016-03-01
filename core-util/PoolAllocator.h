@@ -21,11 +21,11 @@
 #include <stddef.h>
 #include <stdint.h>
 
-// [TODO] where should the system allocator alignment be defined?
-#define MBED_UTIL_POOL_ALLOC_DEFAULT_ALIGN       8
-// [TODO] currently, the requested alignment (in the PoolAllocator constructor) must be
-// less than or equal to MBED_UTIL_POOL_ALLOC_DEFAULT_ALIGN, which effectively limits it to
-// 8 bytes for now
+#ifndef YOTTA_CFG_CORE_UTIL_POOL_ALLOC_DEFAULT_ALIGN
+#define YOTTA_CFG_CORE_UTIL_POOL_ALLOC_DEFAULT_ALIGN 8
+#endif 
+
+#define MBED_UTIL_POOL_ALLOC_DEFAULT_ALIGN YOTTA_CFG_CORE_UTIL_POOL_ALLOC_DEFAULT_ALIGN
 
 namespace mbed {
 namespace util {
