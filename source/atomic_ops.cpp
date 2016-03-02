@@ -16,7 +16,9 @@
  */
 
 #include "core-util/atomic_ops.h"
+#if defined(TARGET_LIKE_MBED)
 #include "cmsis.h"
+#endif
 
 namespace mbed {
 namespace util {
