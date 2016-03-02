@@ -15,7 +15,9 @@
  * limitations under the License.
  */
 
-#ifndef TARGET_NORDIC
+// This critical section implementation is generic for mbed OS targets,
+// except Nordic ones
+#if defined(TARGET_LIKE_MBED) && !defined(TARGET_NORDIC)
 
 #include <stdint.h>                  // uint32_t, UINT32_MAX
 #include <stddef.h>                  // NULL
@@ -69,4 +71,4 @@ void core_util_critical_section_exit()
     }
 }
 
-#endif // not defined(TARGET_NORDIC)
+#endif // defined(TARGET_LIKE_MBED) && !defined(TARGET_NORDIC)
