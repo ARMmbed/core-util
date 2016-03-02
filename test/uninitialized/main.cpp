@@ -33,8 +33,6 @@ void app_start(int, char*[])
         GREENTEA_SETUP(5, "default_auto");
         GREENTEA_TESTSUITE_RESULT(false);
     } else if (g_state != TEST_MANUAL_INIT) {
-        GREENTEA_SETUP(5, "default_auto");
-
         /* First or subsequent runs: If this is the first run, initialize the
          * state and reset. If this code is run again after the first run it
          * means the state is not kept across reboots. Eventually, the test will
@@ -44,6 +42,7 @@ void app_start(int, char*[])
     } else {
         /* Second run: The data was correctly initialized and kept across a
          * system reset. */
+        GREENTEA_SETUP(5, "default_auto");
         g_state = 0;
         GREENTEA_TESTSUITE_RESULT(true);
     }

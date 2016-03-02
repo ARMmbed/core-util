@@ -41,15 +41,15 @@ bool runTest(int * line, const char ** file) {
         }
 
         ptr = (uintptr_t) mbed_sbrk(TEST_SMALL);
-        if(!CHECK_EQ(ptr, init_sbrk_ptr + TEST_SMALL, tests_pass, *file, *line)) {
+        if(!CHECK_EQ(ptr, init_sbrk_ptr + SBRK_ALIGN, tests_pass, *file, *line)) {
             break;
         }
 
         ptr = (uintptr_t) mbed_krbs(TEST_SMALL);
-        if(!CHECK_EQ(ptr, (uintptr_t) &__mbed_krbs_start - TEST_SMALL, tests_pass, *file, *line)) {
+        if(!CHECK_EQ(ptr, (uintptr_t) &__mbed_krbs_start - KRBS_ALIGN, tests_pass, *file, *line)) {
             break;
         }
-        if(!CHECK_EQ(mbed_sbrk_diff, (ptrdiff_t)&__heap_size - 3*TEST_SMALL - (init_sbrk_ptr - (uintptr_t)&__mbed_sbrk_start), tests_pass, *file, *line)) {
+        if(!CHECK_EQ(mbed_sbrk_diff, (ptrdiff_t)&__heap_size - 3*SBRK_ALIGN - (init_sbrk_ptr - (uintptr_t)&__mbed_sbrk_start), tests_pass, *file, *line)) {
             break;
         }
 
@@ -57,13 +57,13 @@ bool runTest(int * line, const char ** file) {
         // Test small increments
         for (unsigned int i = 0; tests_pass && i < TEST_SMALL; i++) {
             ptr = (uintptr_t) mbed_krbs(i);
-            if(!CHECK_EQ(0, ptr & (TEST_SMALL - 1), tests_pass, *file, *line)) {
+            if(!CHECK_EQ(0, ptr & (KRBS_ALIGN - 1), tests_pass, *file, *line)) {
                 break;
             }
         }
         for (unsigned int i = 0; tests_pass && i < TEST_SMALL; i++) {
             ptr = (uintptr_t) mbed_sbrk(i);
-            if(!CHECK_EQ(0, (uintptr_t) mbed_sbrk_ptr & (TEST_SMALL - 1), tests_pass, *file, *line)) {
+            if(!CHECK_EQ(0, (uintptr_t) mbed_sbrk_ptr & (SBRK_ALIGN - 1), tests_pass, *file, *line)) {
                 break;
             }
         }
