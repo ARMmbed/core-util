@@ -44,9 +44,15 @@ void core_util_critical_section_enter()
        are enabled, then something has gone badly wrong thus assert an error.
     */
 
-    assert(interruptEnableCounter < UINT32_MAX);
+    /* FIXME: This assertion needs to be commented out for the moment, as it
+     *        triggers a fault when uVisor is enabled. For more information on
+     *        the fault please checkout ARMmbed/mbed-drivers#176. */
+    /* assert(interruptEnableCounter < UINT32_MAX); */
     if (interruptEnableCounter > 0) {
-        assert(primask & 0x1);
+        /* FIXME: This assertion needs to be commented out for the moment, as it
+         *        triggers a fault when uVisor is enabled. For more information
+         *        on the fault please checkout ARMmbed/mbed-drivers#176. */
+        /* assert(primask & 0x1); */
     }
     interruptEnableCounter++;
 }
@@ -58,7 +64,10 @@ void core_util_critical_section_exit()
 
         uint32_t primask = __get_PRIMASK(); // get the current interrupt enabled state
 
-        assert(primask & 0x1); // Interrupts must be disabled on invoking an exit from a critical section
+        /* FIXME: This assertion needs to be commented out for the moment, as it
+         *        triggers a fault when uVisor is enabled. For more information
+         *        on the fault please checkout ARMmbed/mbed-drivers#176. */
+        /* assert(primask & 0x1); // Interrupts must be disabled on invoking an exit from a critical section */
 
         interruptEnableCounter--;
 
