@@ -17,9 +17,12 @@
 
 #include <stddef.h>
 #include <stdint.h>
-#include "mbed-drivers/test_env.h"
+#include "greentea-client/test_env.h"
+#include "unity/unity.h"
+#include "utest/utest.h"
 #include "core-util/SharedPointer.h"
 
+using namespace utest::v1;
 using namespace mbed::util;
 
 static bool globalFlag = false;
@@ -43,47 +46,42 @@ private:
 };
 
 
-void app_start(int, char*[]) {
-    MBED_HOSTTEST_TIMEOUT(2);
-    MBED_HOSTTEST_SELECT(default);
-    MBED_HOSTTEST_DESCRIPTION(SharedPointer test);
-    MBED_HOSTTEST_START("SharedPointer_TEST");
-
+void test_shared_pointer() {
     /* Test 1: create SharedPointer from pointer */
     Number* ptr1 = new Number(1);
     SharedPointer<Number> sharedptr1(ptr1);
 
     // pointers match
-    MBED_HOSTTEST_ASSERT(sharedptr1.get() == ptr1);
+    TEST_ASSERT_EQUAL(ptr1, sharedptr1.get());
 
     // counter match
-    MBED_HOSTTEST_ASSERT(sharedptr1.use_count() == 1);
+    TEST_ASSERT_EQUAL(1, sharedptr1.use_count());
 
     // dereferencing works
-    MBED_HOSTTEST_ASSERT(sharedptr1->getNum() == 1);
+    TEST_ASSERT_EQUAL(1, sharedptr1->getNum());
 
     /* Test 2: copy pointer */
     {
         SharedPointer<Number> sharedptr1copy;
 
         // NULL pointer is NULL
-        MBED_HOSTTEST_ASSERT(sharedptr1copy.get() == NULL);
-        MBED_HOSTTEST_ASSERT(sharedptr1copy.use_count() == 0);
+        TEST_ASSERT_EQUAL(NULL, sharedptr1copy.get());
+        TEST_ASSERT_EQUAL(0, sharedptr1copy.use_count());
 
         // copy
         sharedptr1copy = sharedptr1;
 
         // raw pointer is consistent
-        MBED_HOSTTEST_ASSERT(sharedptr1copy.get() == ptr1);
-        MBED_HOSTTEST_ASSERT(sharedptr1copy.get() == sharedptr1.get());
+        TEST_ASSERT_EQUAL(ptr1, sharedptr1copy.get());
+        TEST_ASSERT_EQUAL(sharedptr1.get(), sharedptr1copy.get());
 
         // reference count is accurate
-        MBED_HOSTTEST_ASSERT(sharedptr1.use_count() == 2);
-        MBED_HOSTTEST_ASSERT(sharedptr1copy.use_count() == 2);
+        TEST_ASSERT_EQUAL(2, sharedptr1.use_count());
+        TEST_ASSERT_EQUAL(2, sharedptr1copy.use_count());
     }
 
     // sharedptr1copy is destroyed, count is decremented
-    MBED_HOSTTEST_ASSERT(sharedptr1.use_count() == 1);
+    TEST_ASSERT_EQUAL(1, sharedptr1.use_count());
 
 
     /* Test 3: object is destroyed */
@@ -94,22 +92,36 @@ void app_start(int, char*[]) {
         globalFlag = true;
     }
 
-    MBED_HOSTTEST_ASSERT(globalFlag == false);
+    TEST_ASSERT_EQUAL(false, globalFlag);
 
     /* Test 4: corner cases */
 
     // self assignment
-    MBED_HOSTTEST_ASSERT(sharedptr1.use_count() == 1);
+    TEST_ASSERT_EQUAL(1, sharedptr1.use_count());
     sharedptr1 = sharedptr1;
-    MBED_HOSTTEST_ASSERT(sharedptr1.use_count() == 1);
+    TEST_ASSERT_EQUAL(1, sharedptr1.use_count());
 
 
     /* Test 5: basic types */
     {
         SharedPointer<int> sharedptr3(new int);
         *sharedptr3 = 3;
-        MBED_HOSTTEST_ASSERT(*sharedptr3 == 3);
+        TEST_ASSERT_EQUAL(3, *sharedptr3);
     }
+}
 
-    MBED_HOSTTEST_RESULT(true);
+static status_t test_setup(const size_t number_of_cases) {
+    GREENTEA_SETUP(2, "default_auto");
+
+    return greentea_test_setup_handler(number_of_cases);
+}
+
+static Case cases[] = {
+    Case("SharedPointer  - test_shared_pointer", test_shared_pointer)
+};
+
+static Specification specification(test_setup, cases, greentea_test_teardown_handler);
+
+void app_start(int, char**) {
+    Harness::run(specification);
 }

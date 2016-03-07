@@ -17,7 +17,7 @@
 
 #include <stddef.h>
 #include <stdint.h>
-#include "mbed-drivers/test_env.h"
+#include "greentea-client/test_env.h"
 #include "core-util/sbrk.h"
 
 extern void * volatile mbed_sbrk_ptr;
@@ -28,7 +28,6 @@ extern volatile uintptr_t mbed_sbrk_diff;
     ((A) == (B) ? 1 : ((P) = false, (F) = __FILE__, (L) = __LINE__, 0))
 #define CHECK_NEQ(A,B,P,F,L)\
     ((A) != (B) ? 1 : ((P) = false, (F) = __FILE__, (L) = __LINE__, 0))
-
 
 bool runTest(int * line, const char ** file) {
     bool tests_pass = true;
@@ -90,7 +89,7 @@ class Test {
 public:
     Test():_pass(false), _line(0), _file(NULL)
     {
-        _pass = runTest(&_line, &_file);
+       _pass = runTest(&_line, &_file);
     }
     bool passed() {return _pass;}
     int line() {return _line;}
@@ -105,15 +104,12 @@ Test early_test;
 
 void app_start(int, char*[])
 {
-    MBED_HOSTTEST_TIMEOUT(10);
-    MBED_HOSTTEST_SELECT(default);
-    MBED_HOSTTEST_DESCRIPTION(sbrk mini test);
-    MBED_HOSTTEST_START("SBRK_MINI_TEST");
+    GREENTEA_SETUP(10, "default_auto");
 
     if (!early_test.passed()) {
         printf("MBED: Failed at %s:%d\r\n", early_test.file(), early_test.line());
     }
 
-    MBED_HOSTTEST_RESULT(early_test.passed());
+    GREENTEA_TESTSUITE_RESULT(early_test.passed());
     return;
 }

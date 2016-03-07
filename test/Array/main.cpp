@@ -16,10 +16,14 @@
  */
 
 #include "core-util/Array.h"
-#include "mbed-drivers/test_env.h"
+#include "greentea-client/test_env.h"
+#include "mbed-drivers/mbed.h"
+#include "unity/unity.h"
+#include "utest/utest.h"
 #include <stdio.h>
 #include <stdlib.h>
 
+using namespace utest::v1;
 using namespace mbed::util;
 
 static void test_pod() {
@@ -27,43 +31,43 @@ static void test_pod() {
 
     const size_t initial_capacity = 20, grow_capacity = 12, alignment = 4;
     UAllocTraits_t traits = {0};
-    MBED_HOSTTEST_ASSERT(array.init(initial_capacity, grow_capacity, traits, alignment));
+    TEST_ASSERT_TRUE(array.init(initial_capacity, grow_capacity, traits, alignment));
 
     // Start filling the array
     for (unsigned i = 0; i < initial_capacity; i ++ ) {
         array.push_back(i);
     }
-    MBED_HOSTTEST_ASSERT(array.get_num_elements() == initial_capacity);
+    TEST_ASSERT_EQUAL(initial_capacity, array.get_num_elements());
     for (unsigned i = 0; i < initial_capacity; i ++) {
-        MBED_HOSTTEST_ASSERT(array[i] == i);
+        TEST_ASSERT_EQUAL(i, array[i]);
     }
-    MBED_HOSTTEST_ASSERT(array.get_num_zones() == 1);
+    TEST_ASSERT_EQUAL(1, array.get_num_zones());
 
     // Add another element, this should trigger the creation of another zone
     array.push_back(1000);
-    MBED_HOSTTEST_ASSERT(array.get_num_zones() == 2);
-    MBED_HOSTTEST_ASSERT(array.get_num_elements() == initial_capacity + 1);
+    TEST_ASSERT_EQUAL(2, array.get_num_zones());
+    TEST_ASSERT_EQUAL(initial_capacity + 1, array.get_num_elements());
     // Fill the second zone too
     for (unsigned i = 1; i < grow_capacity; i ++) {
         array.push_back(1000 + i);
     }
-    MBED_HOSTTEST_ASSERT(array.get_num_elements() == initial_capacity + grow_capacity);
+    TEST_ASSERT_EQUAL(initial_capacity + grow_capacity, array.get_num_elements());
     for (unsigned i = 0; i < grow_capacity; i ++) {
-        MBED_HOSTTEST_ASSERT(array.at(i + initial_capacity) == 1000 + i);
+        TEST_ASSERT_EQUAL(1000 + i, array.at(i + initial_capacity));
     }
-    MBED_HOSTTEST_ASSERT(array.get_num_zones() == 2);
+    TEST_ASSERT_EQUAL(2, array.get_num_zones());
     unsigned save_for_later = array[initial_capacity + grow_capacity - 1];
     // Add yet another element, which should result in the creation of another zone
     array.push_back(10000);
-    MBED_HOSTTEST_ASSERT(array[initial_capacity + grow_capacity] == 10000);
-    MBED_HOSTTEST_ASSERT(array.get_num_zones() == 3);
-    MBED_HOSTTEST_ASSERT(array.get_num_elements() == initial_capacity + grow_capacity + 1);
+    TEST_ASSERT_EQUAL(10000, array[initial_capacity + grow_capacity]);
+    TEST_ASSERT_EQUAL(3, array.get_num_zones());
+    TEST_ASSERT_EQUAL(initial_capacity + grow_capacity + 1, array.get_num_elements());
 
     // Remove the last element
     array.pop_back();
-    MBED_HOSTTEST_ASSERT(array.get_num_elements() == initial_capacity + grow_capacity);
-    MBED_HOSTTEST_ASSERT(array[array.get_num_elements() - 1] == save_for_later);
-    MBED_HOSTTEST_ASSERT(array.get_num_zones() == 3); // the array doesn't (yet?) shrink
+    TEST_ASSERT_EQUAL(initial_capacity + grow_capacity, array.get_num_elements());
+    TEST_ASSERT_EQUAL(save_for_later, array[array.get_num_elements() - 1]);
+    TEST_ASSERT_EQUAL(3, array.get_num_zones()); // the array doesn't (yet?) shrink
 
     // Simple bubble sort test illustrating moving around elements in the array
     const size_t total = initial_capacity + grow_capacity;
@@ -81,10 +85,10 @@ static void test_pod() {
         }
     }
     for (unsigned i = 0; i < total; i ++) {
-        MBED_HOSTTEST_ASSERT(array[i] == i);
+        TEST_ASSERT_EQUAL(i, array[i]);
     }
 
-    MBED_HOSTTEST_ASSERT(array.get_num_zones() == 3);
+    TEST_ASSERT_EQUAL(3, array.get_num_zones());
 }
 
 struct Test {
@@ -112,11 +116,12 @@ struct Test {
 int Test::inst_count = 0;
 
 static void test_non_pod() {
+    {
     Array<Test> array;
 
     const size_t initial_capacity = 10, grow_capacity = 6, alignment = 4;
     UAllocTraits_t traits = {0};
-    MBED_HOSTTEST_ASSERT(array.init(initial_capacity, grow_capacity, traits, alignment));
+    TEST_ASSERT_TRUE(array.init(initial_capacity, grow_capacity, traits, alignment));
 
     // Just fill the first part of the array and verify
     unsigned idx;
@@ -124,7 +129,7 @@ static void test_non_pod() {
         array.push_back(Test(idx, 'a'));
     }
     for (idx = 0; idx < initial_capacity; idx ++) {
-        MBED_HOSTTEST_ASSERT(array[idx] == Test(idx, 'a'));
+        TEST_ASSERT_TRUE(array[idx] == Test(idx, 'a'));
     }
 
     // Now override what we wrote with different data
@@ -133,26 +138,37 @@ static void test_non_pod() {
     }
     for (idx = 0; idx < initial_capacity; idx ++) {
         const Test& t = array[idx];
-        MBED_HOSTTEST_ASSERT(t == Test(idx, 'b'));
+        TEST_ASSERT_TRUE(t == Test(idx, 'b'));
     }
 
     // Pop the last element from array (checks if destructor is called)
     array.pop_back();
 
-    MBED_HOSTTEST_ASSERT(array.get_num_elements() == initial_capacity - 1);
-    MBED_HOSTTEST_ASSERT(array.get_num_zones() == 1);
+    TEST_ASSERT_EQUAL(initial_capacity - 1, array.get_num_elements());
+    TEST_ASSERT_EQUAL(1, array.get_num_zones());
+    }
+    TEST_ASSERT_EQUAL(0, Test::inst_count);
 }
 
+static status_t test_setup(const size_t number_of_cases) {
+    GREENTEA_SETUP(5, "default_auto");
+
+    return greentea_test_setup_handler(number_of_cases);
+}
+
+status_t greentea_failure_handler(const Case *const source, const failure_t reason) {
+    greentea_case_failure_abort_handler(source, reason);
+    return STATUS_CONTINUE;
+}
+
+static Case cases[] = {
+    Case("Array  - test with plain old data", test_pod, greentea_failure_handler),
+    Case("Array  - test with complex data", test_non_pod, greentea_failure_handler)
+};
+
+static Specification specification(test_setup, cases, greentea_test_teardown_handler);
+
 void app_start(int, char**) {
-    MBED_HOSTTEST_TIMEOUT(5);
-    MBED_HOSTTEST_SELECT(default);
-    MBED_HOSTTEST_DESCRIPTION(mbed-util array  test);
-    MBED_HOSTTEST_START("MBED_UTIL_ARRAY_TEST");
-
-    test_pod(); // test with "plain old data"
-    test_non_pod(); // test with complex data
-    MBED_HOSTTEST_ASSERT(Test::inst_count == 0);
-
-    MBED_HOSTTEST_RESULT(true);
+    Harness::run(specification);
 }
 
