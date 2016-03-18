@@ -33,9 +33,9 @@ PoolAllocator::PoolAllocator(void *start, size_t elements, size_t element_size, 
 
 void* PoolAllocator::alloc() {
     uintptr_t prev_free = reinterpret_cast<uintptr_t>(_free_block);
-    if (0 == prev_free)
-        return NULL;
     while (true) {
+        if (0 == prev_free)
+            return NULL;
         void **const new_free = (void **)(*((void **)prev_free));
         if (atomic_cas((uintptr_t*)&_free_block, &prev_free, (uintptr_t)new_free)) {
             return (void*)prev_free;
