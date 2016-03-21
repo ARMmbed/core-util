@@ -3,6 +3,9 @@ All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
+### Fixed
+- A race condition in `PoolAllocator::alloc()`
+
 
 ## [1.6.0] 2016-03-07
 ### Fixed
