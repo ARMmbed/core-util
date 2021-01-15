@@ -1,3 +1,7 @@
+## Deprecation note!
+
+**Please note: this repository is deprecated and is no longer actively maintained**.
+
 # mbed utilities library
 
 Implementation of various generic data structures and algorithms used in mbed.
